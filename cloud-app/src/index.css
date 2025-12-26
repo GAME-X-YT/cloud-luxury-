@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+.ole-regular {
+  font-family: "Ole", cursive;
+  font-weight: 550;
+  font-size: 100px;
+  font-style: normal;
+}
+
+.rochester-regular {
+  font-family: "Rochester", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.satisfy-regular {
+  font-family: "Satisfy", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.trade-winds-regular {
+  font-family: "Trade Winds", system-ui;
+  font-weight: 900;
+  font-style: normal;
+}
+.cinzel-regular {
+  font-family: "Cinzel", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.cinzel-bold {
+  font-family: "Cinzel", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.lobster-regular {
+  font-family: "Lobster", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.pacifico-regular {
+  font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.rancho-regular {
+  font-family: "Rancho", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.tangerine-regular {
+  font-family: "Tangerine", cursive;
+  font-weight: 400;
+  font-size: 40px;
+  font-style: normal;
+}
+
+.tangerine-bold {
+  font-family: "Tangerine", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.dancing-regular {
+  font-family: "Dancing Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.dancing-bold {
+  font-family: "Dancing Script", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.italianno-regular {
+  font-family: "Italianno", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+.italianno-bold {
+  font-family: "Italianno", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
