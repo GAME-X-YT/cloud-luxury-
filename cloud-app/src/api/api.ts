@@ -1,31 +1,18 @@
-// import axios from "axios";
-
-// const API = axios.create({
-//   baseURL: "http://localhost:5000/api/users", // your backend URL
-// });
-
-// export const register = (userData: any) => API.post("/register", userData);
-// export const login = (userData: any) => API.post("/login", userData);
-
-// export const getProfile = ( token: string) =>
-//   API.get(`/profile`, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
-// export const uploadProfilePic = (fileData: FormData, token: string) =>
-//   API.post("/upload-profile", fileData, {
-//     headers: { Authorization: `Bearer ${token}` },
-//   });
-
 
 
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api/users", // your backend URL
+  baseURL: "http://localhost:5000/api/users", // your backend URL
 });
 
 // --- User Authentication and Activation ---
+// Fetch all shoes
+export const getAllShoes = () => API.get('/shoes');
+// If the owner needs to upload (for the Admin Panel)
+export const addShoe = (shoeData: FormData) => API.post('/shoes/add', shoeData, {
+    headers: { "Content-Type": "multipart/form-data" }
+});
 
 export const register = (userData: any) => API.post("/register", userData);
 
@@ -34,11 +21,12 @@ export const activateAccount = (data: { email: string, otp: string }) =>
   API.post("/activate", data);
 
 // 🔑 NEW: Function to request the OTP during 2FA Login (Step 1 of Login)
-export const loginOTPRequest = (data: { email: string }) => 
+export const loginOTPRequest = (data: { email: string, password: string }) => 
   API.post("/login-otp-request", data);
 
 // UPDATED: Login now sends email, password, AND otp
-export const login = (userData: any) => API.post("/login", userData); 
+export const login = (data: { email: string; password: string; otp?: string }) => 
+    API.post("/login", data);
 
 // --- User Data and Profile ---
 

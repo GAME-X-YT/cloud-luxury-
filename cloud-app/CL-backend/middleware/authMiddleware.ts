@@ -7,12 +7,12 @@ interface AuthRequest extends Request {
 }
 
 export const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-  // Check for token existence and format (Bearer <token>)
-  const authHeader = req.headers.authorization;
+ // Check for token existence and format (Bearer <token>)
+  const authHeader = req.headers.authorization;
   
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "No token or invalid format, authorization denied" });
-  }
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "No token or invalid format, authorization denied" }); 
+   }
 
   const token = authHeader.split(" ")[1];
 

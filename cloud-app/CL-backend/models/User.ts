@@ -5,7 +5,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   profilePic?: string;
-
+  
+ role: 'admin' | 'customer';
 
   // New Fields for OTP/Verification:
   isVerified: boolean; // Tracks if the account email has been confirmed (for sign-up)
@@ -19,6 +20,11 @@ const UserSchema = new mongoose.Schema<IUser>({
   password: { type: String, required: true },
   profilePic: { type: String },
 
+  role: { 
+    type: String, 
+    enum: ['admin', 'customer'], 
+    default: 'customer' // Most users are customers
+  },
 
   // New Schema Definitions:
   isVerified: {

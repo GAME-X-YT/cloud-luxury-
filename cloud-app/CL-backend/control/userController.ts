@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User";
-import { sendEmail } from "../utility/sendEmail";
-import {generateAndSendOTP, verifyOTP } from "../utility/otp"
+import { sendEmail } from "../middleware/sendEmail";
+import {generateAndSendOTP, verifyOTP } from "../middleware/otp"
 
 interface AuthRequest extends Request {
   user?: { id: string }; // Assuming JWT payload is { id: string }
@@ -109,11 +109,47 @@ export const loginUser = async (req: Request, res: Response) => {
             "A successful login occurred on your account. If this wasn't you, please secure your account immediately."
         );
 
-        res.json({ message: "Login successful", token, userId: user._id });
+        res.json({ 
+            message: "Login successful", 
+            token, 
+            userId: user._id, 
+            role: user.role // THIS IS KEY FOR THE OWNER DASHBOARD
+        });
 
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const loginOTPRequest = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body;
+
+        // 1. Check if user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        // 2. Check if account is verified
+        if (!user.isVerified) {
+            return res.status(400).json({ message: "Please activate your account first." });
+        }
+
+        // 3. Verify Password BEFORE sending OTP
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid email or password." });
+        }
+
+        // 4. Send the Login OTP
+        await generateAndSendOTP(email, "Your Login Verification Code");
+
+        res.status(200).json({ message: "Verification code sent to your email!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error during login request." });
     }
 };
 

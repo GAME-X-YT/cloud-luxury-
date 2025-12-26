@@ -150,7 +150,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { register, activateAccount } from "../api/api"; // Your existing API call to POST /register
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline"; 
-import axios from "axios"; // Needed for activation logic
+
 
 // --- Types ---
 interface FormState {
@@ -239,19 +239,25 @@ export default function Signup() {
             // Success! Store token and execute final navigation.
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('userId', response.data.userId);
+        // 🛑 ADD THIS: Store the user object including the role
+                // This ensures the App.tsx 'user' state updates immediately
+                const userData = {
+                    id: response.data.userId,
+                    role: response.data.role, // Assuming your backend sends this now
+                    email: email
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
 
-            handleActivationSuccess(); // Navigate to /profile
+                // 2. Success!
+                handleActivationSuccess(); 
 
-        } catch (err) {
-            const message = (axios.isAxiosError(err) && err.response)
-                ? err.response.data.message
-                : 'Activation failed.';
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-    
+            } catch (err) {
+                // ... error handling ...
+            } finally {
+                setIsLoading(false);
+            }
+        };
+            
     // Resends the code by hitting the /register endpoint again
     const handleResendCode = async () => {
         setIsLoading(true);

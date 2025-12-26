@@ -299,13 +299,13 @@ const products: Product[] = [
 
   { id: "T-shirt", img: "https://i.pinimg.com/1200x/5d/72/d0/5d72d03bf3775cb1d35ae6fe517e2ae0.jpg", name: "Cloud T-Shirt", price: "$30.00", category: "T-shirt" },
 
-  { id: "jewelry", img: 'https://i.pinimg.com/736x/72/24/25/722425f0be6394a13e9eb2ebd255c8ba.jpg', name: "Cloud Necklace", price: "$40.00", category: "jewelry" },
+  { id: "jewelry", img: 'https://i.pinimg.com/736x/58/b2/d4/58b2d4afaae9ee6953344f5c3dccb318.jpg', name: "Cloud couples outfit", price: "$40.00", category: "couples outfit" },
 
   { id: "shorts", img: 'https://i.pinimg.com/1200x/ab/80/0f/ab800f0858bd56e7842f7c002d62f9ea.jpg', name: "Cloud Shorts", price: "$20.00", category: "shorts" },
 
   { id: "hoodie", img: 'https://i.pinimg.com/1200x/b1/b1/4a/b1b14a9a796fb6ffdab193d0abc19fb8.jpg', name: "Cloud Hoodie", price: "$35.00", category: "hoodie" },
 
-  { id: " jewelry", img: 'https://i.pinimg.com/1200x/95/9d/20/959d20787fd5a8a0862fcb1668c7d646.jpg', name: "jewelry",price: "", category: "jewelry" },
+  { id: "jewelry", img: 'https://i.pinimg.com/1200x/95/9d/20/959d20787fd5a8a0862fcb1668c7d646.jpg', name: "jewelry",price: "", category: "jewelry" },
 
 ];
 
