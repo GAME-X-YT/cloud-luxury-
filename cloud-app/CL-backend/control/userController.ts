@@ -100,14 +100,45 @@ export const loginUser = async (req: Request, res: Response) => {
         await user.save();
 
         // 4. Success Confirmation Email
-        await sendEmail(
+        // Now call your function with the HTML variable
+                const emailTemplate = `
+        <div style="background-color: #0a0a0a; color: #ffffff; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; padding: 40px; border-radius: 20px; max-width: 600px; margin: auto; border: 1px solid #333;">
+            <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #eab308; font-size: 24px; letter-spacing: 2px; text-transform: uppercase;">Cloud Luxury</h1>
+            <div style="height: 1px; background: linear-gradient(to right, transparent, #eab308, transparent); margin-top: 10px;"></div>
+            </div>
+            
+            <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px;">Security Alert: New Login</h2>
+            
+            <p style="color: #a3a3a3; line-height: 1.6; font-size: 16px;">
+            Hello, <br><br>
+            This is a quick notification to let you know that a successful login occurred on your account.
+            </p>
 
-                 user.email, 
+            <div style="background-color: #171717; border: 1px solid #262626; padding: 20px; border-radius: 12px; margin: 25px 0;">
+            <p style="margin: 0; font-size: 14px; color: #eab308; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Log Details</p>
+            <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 14px;">
+                <strong>Time:</strong> ${new Date().toLocaleString()}<br>
+                <strong>Status:</strong> Success
+            </p>
+            </div>
 
-            "Successful Login Notification", 
+            <p style="color: #ef4444; font-size: 14px; font-style: italic;">
+            If this wasn't you, please secure your account immediately by changing your password in the dashboard.
+            </p>
 
-            "A successful login occurred on your account. If this wasn't you, please secure your account immediately."
-        );
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #262626; text-align: center;">
+            <p style="color: #525252; font-size: 12px; margin: 0;">
+                &copy; 2025 Cloud Luxury. All rights reserved.
+            </p>
+            </div>
+        </div>
+        `;
+    await sendEmail(
+        user.email, 
+        "Security Alert: Successful Login", 
+        emailTemplate // Pass the template here
+    );
 
         res.json({ 
             message: "Login successful", 
@@ -173,11 +204,42 @@ export const forgotPasswordRequest = async (req: Request, res: Response) => {
 
         if (!user || !user.isVerified) {
             // Send a generic message even if the user isn't found for security reasons
-            await sendEmail(
-                email,
-                "Password Reset Attempt",
-                "A password reset was requested for this email. If this is not your email, you can ignore this message."
-            );
+   const resetTemplate = `
+        <div style="background-color: #000000; padding: 40px 20px; font-family: 'Georgia', serif; text-align: center; color: #ffffff;">
+        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #c5a059; padding: 40px;">
+            
+            <h1 style="color: #c5a059; font-size: 28px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px;">Cloud Luxury</h1>
+            <p style="color: #ffffff; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px;">Private Authentication</p>
+
+            <h2 style="font-size: 20px; color: #ffffff; margin-bottom: 25px; font-weight: normal; letter-spacing: 1px;">Password Reset Request</h2>
+            
+            <p style="color: #b5b5b5; font-size: 15px; line-height: 1.8; margin-bottom: 30px; text-align: left;">
+            A request has been made to reset the password for your <strong>Cloud Luxury</strong> account. To proceed with your security update, please use the button below.
+            </p>
+
+            <div style="margin: 40px 0;">
+            <a href="https://yourwebsite.com/reset-password" style="background-color: #c5a059; color: #000; padding: 18px 35px; text-decoration: none; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: inline-block;">Reset Password</a>
+            </div>
+
+            <div style="background-color: #111; padding: 20px; border-radius: 4px; margin-top: 20px;">
+            <p style="color: #777; font-size: 13px; margin: 0; line-height: 1.6;">
+                <strong>Safety Notice:</strong> If you did not initiate this request, please disregard this message. Your password will remain unchanged and your account stays secure.
+            </p>
+            </div>
+
+            <div style="margin-top: 50px; border-top: 1px solid #333; padding-top: 20px;">
+            <p style="color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                This link will expire in 1 hour.
+            </p>
+            </div>
+
+        </div>
+        </div>
+        `;
+
+// Now call the function
+await sendEmail(email, "Cloud Luxury | Password Reset Request", resetTemplate);
+
             return res.status(200).json({ 
                 message: "If a matching account was found, a reset code has been sent to your email." 
             });
@@ -236,11 +298,47 @@ export const resetPassword = async (req: Request, res: Response) => {
         await user.save();
 
         // 4. Confirmation Email
-        await sendEmail(
-            email,
-            "Password Successfully Changed",
-            "Your password has been successfully updated. If you did not make this change, please contact support immediately."
-        );
+        const successTemplate = `
+            <div style="background-color: #000000; padding: 40px 20px; font-family: 'Georgia', serif; text-align: center; color: #ffffff;">
+            <div style="max-width: 600px; margin: 0 auto; border: 1px solid #c5a059; padding: 40px;">
+                
+                <h1 style="color: #c5a059; font-size: 28px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px;">Cloud Luxury</h1>
+                <p style="color: #ffffff; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px;">Security Confirmation</p>
+
+                <div style="margin-bottom: 30px;">
+                <span style="font-size: 50px; color: #c5a059;">&#10003;</span>
+                </div>
+
+                <h2 style="font-size: 22px; color: #ffffff; margin-bottom: 20px; font-weight: normal; letter-spacing: 1px;">Password Changed</h2>
+                
+                <p style="color: #b5b5b5; font-size: 15px; line-height: 1.8; margin-bottom: 30px;">
+                Your account security credentials have been successfully updated. Access to your <strong>Cloud Luxury</strong> profile now requires your new password.
+                </p>
+
+                <div style="background-color: #111; border: 1px solid #222; padding: 20px; margin: 25px 0; text-align: left;">
+                <p style="margin: 0; font-size: 12px; color: #c5a059; text-transform: uppercase; letter-spacing: 1px;">Update Details</p>
+                <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 14px;">
+                    <strong>Status:</strong> Successfully Updated<br>
+                    <strong>Date:</strong> ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+                </div>
+
+                <p style="color: #ef4444; font-size: 13px; margin-top: 30px; font-style: italic;">
+                If you did not make this change, please contact our concierge support immediately to freeze your account.
+                </p>
+
+                <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #333;">
+                <p style="color: #555; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">
+                    &copy; 2025 Cloud Luxury Portfolio
+                </p>
+                </div>
+
+            </div>
+            </div>
+            `;
+
+// Call the function
+    await sendEmail(email, "Cloud Luxury | Password Successfully Changed", successTemplate);
         
         res.status(200).json({
             message: "Password successfully updated. You can now log in with your new password."
@@ -316,11 +414,47 @@ export const activateAccount = async (req: Request, res: Response) => {
         );
 
         // 4. Success Confirmation Email
-        await sendEmail(
-            email, 
-            "Account Successfully Activated", 
-            "Congratulations! Your account has been successfully verified and activated. You can now log in securely."
-        );
+        const activationTemplate = `
+        <div style="background-color: #000000; padding: 40px 20px; font-family: 'Georgia', serif; text-align: center; color: #ffffff;">
+        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #c5a059; padding: 40px;">
+            
+            <h1 style="color: #c5a059; font-size: 28px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px;">Cloud Luxury</h1>
+            <p style="color: #ffffff; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid #333; padding-bottom: 20px;">Membership Activated</p>
+
+            <h2 style="font-size: 24px; color: #ffffff; margin-bottom: 20px; font-weight: normal; letter-spacing: 1px;">Welcome to the Vault</h2>
+            
+            <p style="color: #b5b5b5; font-size: 16px; line-height: 1.8; margin-bottom: 30px;">
+            Congratulations. Your identity has been verified and your <strong>Cloud Luxury</strong> account is now fully active. You have gained exclusive access to our curated collection and private concierge services.
+            </p>
+
+            <div style="margin: 30px 0;">
+            <div style="display: inline-block; border: 1px solid #c5a059; padding: 10px 20px; border-radius: 50px;">
+                <span style="color: #c5a059; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">● Status: Fully Verified</span>
+            </div>
+            </div>
+
+            <div style="margin-top: 40px;">
+            <a href="http://localhost:3000/login" style="background-color: #c5a059; color: #000; padding: 18px 40px; text-decoration: none; font-size: 13px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; display: inline-block;">Enter the Collection</a>
+            </div>
+
+            <div style="margin-top: 40px; padding: 20px; background-color: #111; border-top: 1px solid #222;">
+            <p style="color: #777; font-size: 13px; margin: 0;">
+                Your security is our priority. Always ensure you are on the official <strong>cloudluxury.com</strong> domain before entering your credentials.
+            </p>
+            </div>
+
+            <div style="margin-top: 50px;">
+            <p style="color: #555; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                Luxury is in the details.
+            </p>
+            </div>
+
+        </div>
+        </div>
+        `;
+
+// Call the function
+await sendEmail(email, "Welcome to Cloud Luxury | Account Activated", activationTemplate);
         
         // 5. Respond to client
         res.json({ 
@@ -392,11 +526,44 @@ try {
         await User.findByIdAndDelete(userId);
 
         // 4. SUCCESS CONFIRMATION EMAIL
-        await sendEmail(
-            user.email, 
-            "Account Deletion Successful", 
-            "This confirms that your account was successfully and permanently deleted as requested. We are sorry to see you go."
-        );
+        const deletionTemplate = `
+                <div style="background-color: #000000; padding: 40px 20px; font-family: 'Georgia', serif; text-align: center; color: #ffffff;">
+                <div style="max-width: 600px; margin: 0 auto; border: 1px solid #333; padding: 40px;">
+                    
+                    <h1 style="color: #c5a059; font-size: 28px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px;">Cloud Luxury</h1>
+                    <p style="color: #666; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px;">Account Closure</p>
+
+                    <h2 style="font-size: 20px; color: #ffffff; margin-bottom: 25px; font-weight: normal; letter-spacing: 1px;">Formal Confirmation</h2>
+                    
+                    <p style="color: #b5b5b5; font-size: 15px; line-height: 1.8; margin-bottom: 30px; text-align: left;">
+                    This email serves as formal confirmation that your <strong>Cloud Luxury</strong> account and all associated data have been permanently deleted from our servers as per your request.
+                    </p>
+
+                    <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 25px; margin: 30px 0; text-align: left;">
+                    <p style="margin: 0; font-size: 12px; color: #c5a059; text-transform: uppercase; letter-spacing: 1px;">Closing Summary</p>
+                    <p style="margin: 15px 0 0 0; color: #888; font-size: 14px; line-height: 1.6;">
+                        • Profile Data: <strong>Removed</strong><br>
+                        • Personal Collections: <strong>Wiped</strong><br>
+                        • Security Credentials: <strong>Deactivated</strong>
+                    </p>
+                    </div>
+
+                    <p style="color: #777; font-size: 14px; line-height: 1.6; margin-bottom: 30px;">
+                    We are truly sorry to see you go. Should you wish to return to our private collection in the future, you will need to create a new membership.
+                    </p>
+
+                    <div style="margin-top: 50px; border-top: 1px solid #222; padding-top: 20px;">
+                    <p style="color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                        Cloud Luxury | Excellence in Departure
+                    </p>
+                    </div>
+
+                </div>
+                </div>
+                `;
+
+// Call the function
+ await sendEmail(user.email, "Cloud Luxury | Account Deletion Confirmed", deletionTemplate);
         
         res.json({ message: "User account deleted successfully." });
 

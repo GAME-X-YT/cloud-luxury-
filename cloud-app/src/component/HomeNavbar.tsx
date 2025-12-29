@@ -253,7 +253,7 @@ useEffect(() => {
         initial={{ y: -100, x: "-50%" }}
         animate={{ y: showNavbar ? 0 : -120, x: "-50%" }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed left-1/2 z-[100] w-[94%] max-w-7xl mt-4"
+        className="fixed left-1/2 z-100 w-[94%] max-w-7xl mt-4"
       >
         <div className="backdrop-blur-2xl bg-white/40 border border-white/50 shadow-2xl rounded-[2.5rem]">
           <div className="px-6 py-3 flex justify-between items-center">
@@ -270,7 +270,7 @@ useEffect(() => {
                   className="rounded-full w-10 h-10 border-2 border-purple-500/30 group-hover:border-purple-500 transition-colors"
                 />
               </motion.div>
-              <span className="text-2xl font-bold tangerine-regular bg-gradient-to-r from-gray-700 to-purple-900 bg-clip-text text-transparent hidden sm:inline">
+              <span className="text-2xl font-bold tangerine-regular bg-linear-to-r from-gray-700 to-purple-900 bg-clip-text text-transparent hidden sm:inline">
                 Cloud Luxury
               </span>
             </Link>

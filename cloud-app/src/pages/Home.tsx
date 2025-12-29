@@ -243,7 +243,7 @@
 
 
 // Updated Home component with TypeScript type fixes
-import { motion, } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../component/HomeNavbar";
@@ -287,7 +287,7 @@ const images = [
 
   { src: "https://i.pinimg.com/736x/af/eb/46/afeb46fdf5a26987df57e9fc6ad01831.jpg", text: "✵ The perfect slouch and volume for a modern, street-inspired silhouette ✵" },
 
-  { src: "https://i.pinimg.com/736x/fb/de/e8/fbdee8643593887892ff26d19fb1b90d.jpg", text: "This is image 6 description" },
+  // { src: "https://i.pinimg.com/736x/fb/de/e8/fbdee8643593887892ff26d19fb1b90d.jpg", text: "This is image 6 description" },
 
 ];
 
@@ -297,9 +297,9 @@ const Home = () => {
 const products: Product[] = [
   { id: "shoes", img: "https://i.pinimg.com/1200x/49/ba/fd/49bafd30a74d89f332974a82a569ea64.jpg", name: "Cloud Shoes", price: "$25.00", category: "shoes" },
 
-  { id: "T-shirt", img: "https://i.pinimg.com/1200x/5d/72/d0/5d72d03bf3775cb1d35ae6fe517e2ae0.jpg", name: "Cloud T-Shirt", price: "$30.00", category: "T-shirt" },
+  { id: "T-shirt", img: "https://i.pinimg.com/1200x/5d/72/d0/5d72d03bf3775cb1d35ae6fe517e2ae0.jpg", name: "Cloud T-Shirt", price: "$30.00", category: "Tshirt" },
 
-  { id: "jewelry", img: 'https://i.pinimg.com/736x/58/b2/d4/58b2d4afaae9ee6953344f5c3dccb318.jpg', name: "Cloud couples outfit", price: "$40.00", category: "couples outfit" },
+  { id: "couples-outfit", img: 'https://i.pinimg.com/736x/58/b2/d4/58b2d4afaae9ee6953344f5c3dccb318.jpg', name: "Cloud couples outfit", price: "$100.00", category: "couples-outfit" },
 
   { id: "shorts", img: 'https://i.pinimg.com/1200x/ab/80/0f/ab800f0858bd56e7842f7c002d62f9ea.jpg', name: "Cloud Shorts", price: "$20.00", category: "shorts" },
 
@@ -377,31 +377,85 @@ const products: Product[] = [
         <source src={cloudvid} type="video/mp4" />
       </video>
 
-      {/* HERO SECTION */}
-        <section className="h-screen flex flex-col md:flex-row items-center justify-center px-6 md:px-16 lg:px-24">
+              {/* HERO SECTION */}
+      <section className="relative min-h-screen flex flex-col lg:flex-row items-center justify-center px-6 md:px-16 lg:px-24 pt-20">
+        
+        {/* 🔥 FLOATING TEXT CONTENT */}
+        <motion.div 
+          // This creates the continuous floating effect
+          animate={{ 
+            // This controls the movement distance (y)
+            y: [0, -15, 0],
+          }}
+          transition={{ 
+            // Lower number = Faster bounce
+            duration: 3, 
+            repeat: Infinity, 
+            // "easeInOut" makes the top and bottom of the bounce feel smooth
+            ease: "easeInOut" 
+          }}
+          className="z-10 text-center lg:text-left max-w-2xl lg:mr-auto"
+        >
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <h1 className="text-6xl md:text-8xl lg:text-9xl ole-regular mb-6 text-black leading-tight drop-shadow-2xl">
+              Cloud <br />
+              <span className="text-yellow-500">Luxury</span> Style
+            </h1>
+            <p className="text-lg md:text-xl text-gray-800 font-light tracking-widest max-w-md mx-auto lg:mx-0 opacity-80 italianno-regular">
+              Discover the latest fashion trends curated for the perfect stride.
+            </p>
+            
+            <motion.button 
+              whileHover={{ scale: 1.05, backgroundColor: "#6259de", color: "#ffffff" }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/wardrobe')}
+              className="mt-10 px-10 py-4 border border-blue-900 text-blue-700 rounded-full text-xs uppercase tracking-[0.3em] backdrop-blur-sm transition-all"
+            >
+              Explore Collection
+            </motion.button>
+          </motion.div>
+        </motion.div>
 
-        <div className="text- md:text-left max-w-xl md:mr-32 lg:mr-48 rounded-3xl h-[90px] md:h-[150px] px-6 md:px-10 py-4 md:py-8 mb-10 md:mb-0">
-
-          <h1 className="text-5xl md:text-7xl ole-regular mb-4 text-gray-800">
-            Cloud Luxury Style
-          </h1>
-          <p className="text-lg text-gray-700">
-            Discover the latest fashion trends just for you
-          </p>
-        </div>
-
-
-        {/* changing Image */}
-        <div className="hidden min-[1400px]:flex justify-center items-center shrink-0">
-          <motion.img
-            key={currentImage}
-            src={changeImages[currentImage]}
-            alt="Hero Image"
-            className="w-[350px] object-cover z-10 rounded-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+        {/* Dynamic Animated Image - Now Visible & Responsive */}
+        <div className="relative hidden lg:block w-full max-w-[300px] md:max-w-[450px] lg:max-w-[500px] aspect-square justify-center items-center">
+          
+          {/* Decorative Rotating Ring */}
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute inset-0 border border-dashed border-yellow-500/40 rounded-full"
           />
+
+          {/* The Changing Image */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentImage}
+              initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              exit={{ opacity: 0, scale: 1.1, rotate: 5 }}
+              transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
+              className="w-full h-full p-4"
+            >
+              <img
+                src={changeImages[currentImage]}
+                alt="Luxury Fashion"
+                className="w-full h-full object-cover rounded-full shadow-2xl border-4 border-white/10"
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Floating Badge */}
+          <motion.div 
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="absolute -top-4 -right-4 bg-yellow-500 text-black w-20 h-20 rounded-full flex items-center justify-center text-[10px] font-bold uppercase text-center p-2 shadow-xl border-2 border-black"
+          >
+            New <br /> Drop
+          </motion.div>
         </div>
       </section>
 
@@ -413,100 +467,166 @@ const products: Product[] = [
           //   }}
       >
 
-        {/* 🔥 Dual Motion Marquee Section */}
-        <section className="relative h-[70vh] w-full flex flex-col justify-center space-y-8 py-8 text-center">
+                {/* 🔥 High-Fashion Dual Motion Marquee Section */}
+        <section className="relative min-h-[80vh] w-full flex flex-col justify-center space-y-12 py-20 overflow-hidden bg-transparent">
+          
+          {/* Background Text Decor */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+            <h2 className="text-[20vw] font-black uppercase italic">Vogue</h2>
+          </div>
 
-          {/* First Marquee */}
+          {/* First Marquee: Moving Left */}
+          <div className="group relative flex overflow-hidden">
+            <motion.div 
+              className="flex gap-6 min-w-max px-4" 
+              animate={{ x: ["0%", "-50%"] }} 
+              transition={{ 
+                repeat: Infinity, 
+                duration: 35, 
+                ease: "linear" 
+              }}
+              // Pauses the marquee when hovering anywhere in the row
+              whileHover={{ transition: { duration: 60 } }} 
+            >
+              {[...Array(4)].flatMap((_, i) => 
+                fashionImages.map((src, index) => (
+                  <motion.div
+                    key={`row1-${i}-${index}`}
+                    whileHover={{ 
+                      scale: 1.1, 
+                      rotate: 2,
+                      zIndex: 50,
+                    }}
+                    className="relative w-64 h-80 cursor-pointer transition-all duration-500"
+                  >
+                    <img 
+                      src={src} 
+                      className="w-full h-full object-cover rounded-2xl shadow-2xl border border-white/10" 
+                      alt="Fashion Look"
+                    />
+                    {/* Hover Glass Overlay */}
+                    <div className="absolute inset-0 bg-yellow-500/10 opacity-0 hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center backdrop-blur-[2px]">
+                      <span className="text-white text-[10px] uppercase tracking-[0.4em] font-bold border-b border-white pb-1">View</span>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          </div>
+
+        {/* Second Marquee: Moving Right */}
+        <div className="group relative flex overflow-hidden">
           <motion.div 
-          className="flex gap-4 min-w-max" 
-          animate={{ x: ["0%", "-30%"] }} 
-          transition={{ 
-            repeat: Infinity, 
-            duration: 25, 
-            ease: "linear" 
-            }}>
-            
-            {[...Array(3)].flatMap(() => 
-            fashionImages.map((src, index) => (
+            className="flex gap-6 min-w-max px-4" 
+            animate={{ x: ["-50%", "0%"] }} 
+            transition={{ 
+              repeat: Infinity, 
+              duration: 40, 
+              ease: "linear" 
+            }}
+            whileHover={{ transition: { duration: 80 } }}
+          >
+            {[...Array(4)].flatMap((_, i) => 
+              fashionImagesTwo.map((src, index) => (
+                <motion.div
+                  key={`row2-${i}-${index}`}
+                  whileHover={{ 
+                    scale: 1.1, 
+                    rotate: -2,
+                    zIndex: 50
+                  }}
+                  className="relative w-80 h-56 cursor-pointer transition-all duration-500"
+                >
+                  <img 
+                    src={src} 
+                    className="w-full h-full object-cover rounded-2xl shadow-2xl border border-white/10" 
+                    alt="Fashion Look"
+                  />
+                  {/* Hover Glass Overlay */}
+                  <div className="absolute inset-0 bg-white/5 opacity-0 hover:opacity-100 transition-opacity rounded-2xl flex items-center justify-center backdrop-blur-[2px]">
+                    <span className="text-white text-[10px] uppercase tracking-[0.4em] font-bold">Lookbook</span>
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </motion.div>
+        </div>
+
+        {/* Bottom Decorative Line */}
+        <div className="max-w-xs mx-auto h-px bg-linear-to-r from-transparent via-yellow-500/50 to-transparent" />
+      </section>
+
+          {/* 🔥 High-Fashion Alternating Scroll Section */}
+        <section className="relative py-32 px-6 md:px-16 overflow-hidden bg-transparent">
+          
+          {/* Optional: Background Ambient Light */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-500/5 blur-[150px] -z-10" />
+
+          {images.map((item, index) => (
+            <motion.div
+              key={index}
+              className={`
+                flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 mb-40
+                ${index % 2 === 1 ? "md:flex-row-reverse" : ""}
+              `}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
               
-              <img 
-              key={`row1-${index}`} 
-              src={src} 
-              className="w-50 h-50 object-cover rounded-xl shadow-lg" />
-            )))}
-
-          </motion.div>
-
-          {/* Second Marquee */}
-          <motion.div 
-          className="flex gap-4 min-w-max" 
-          animate={{ x: ["-30%", "0%"] }} 
-          transition={{ 
-            repeat: Infinity, 
-            duration: 25, 
-            ease: "linear" 
-            }}>
-
-            {[...Array(2)].flatMap(() => 
-            fashionImagesTwo.map((src, index) => (
-
-              <img 
-              key={`row2-${index}`} 
-              src={src} 
-              className="w-60 h-40 object-cover rounded-xl shadow-lg" />
-            )))}
-          </motion.div>
-
-        </section>
-
-            {/* 🔥 Alternating Image/Text Scroll Animation Section */}
-
-          <section className="relative py-20 px-6 md:px-16 space-y-24">
-
-            {images.map((item, index) => (
-              <motion.div
-                key={index}
-                className={`
-                  flex flex-col md:flex-row items-center gap-10 lg:gap-20
-                  ${index % 2 === 1 ? "md:flex-row-reverse" : ""}
-                `}
-                initial={{ opacity: 0, y: 100 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                viewport={{ once: true, amount: 0.3 }}
+              {/* 📸 IMAGE CONTAINER with Mask Reveal */}
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, clipPath: "inset(10% 10% 10% 10% rounded 100%)" },
+                  visible: { opacity: 1, clipPath: "inset(0% 0% 0% 0% rounded 100%)" }
+                }}
+                transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
+                className="relative w-full sm:w-[400px] lg:w-[450px] aspect-4/5 md:aspect-square shrink-0"
               >
-
-                {/* IMAGE */}
                 <img
                   src={item.src}
-                  alt={`image-${index}`}
-                  className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 object-cover rounded-full shadow-xl"
+                  alt={`collection-${index}`}
+                  className="w-full h-full object-cover rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10"
                 />
+                
+                {/* Decorative Floating Number */}
+                <span className="absolute -top-6 -left-6 text-7xl font-serif italic text-white/5 select-none hidden lg:block">
+                  0{index + 1}
+                </span>
+              </motion.div>
 
-                {/* TEXT */}
-                <div
-                  className="
-                    md:w-1/2 text-left text-gray-200 
-                    p-4 md:p-6 
-                    rounded-xl 
-                    relative
-                    transition-all duration-300 ease-in-out
-                    md:max-w-[500px] md:mx-auto sm:mx-auto
-                  "
-                >
-                  {/* BLUE BLUR CIRCLE */}
-                  <div className="absolute -z-10 w-60 h-60 bg-blue-500/40 blur-3xl rounded-full -top-10 -left-10"></div>
+              {/* ✍️ TEXT CONTENT with Floating Animation */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: index % 2 === 0 ? 50 : -50 },
+                  visible: { opacity: 1, x: 0 }
+                }}
+                transition={{ duration: 1, delay: 0.3 }}
+                className="max-w-md relative"
+              >
+                {/* The Golden Blur behind text */}
+                <div className={`absolute -z-10 w-64 h-64 ${index % 2 === 0 ? "bg-yellow-500/10" : "bg-blue-500/10"} blur-[80px] -top-20`} />
 
-
-                  <p className="text-lg leading-relaxed trade-winds-regular">
+                <div className="space-y-6">
+                  <div className="h-px w-12 bg-yellow-500" />
+                  
+                  <p className="text-3xl md:text-4xl leading-snug rochester-regular text-white italic tracking-wide">
                     {item.text}
                   </p>
+
+                  <motion.div 
+                    whileHover={{ x: 10 }}
+                    className="flex items-center gap-4 text-yellow-500/60 text-[10px] uppercase tracking-[0.5em] font-bold cursor-pointer"
+                  >
+                    <span>Explore Details</span>
+                    <div className="h-px w-6 bg-yellow-500/40" />
+                  </motion.div>
                 </div>
-
               </motion.div>
-            ))}
 
-          </section>
+            </motion.div>
+          ))}
+        </section>
 
 
         {/* Product Grid Section */}

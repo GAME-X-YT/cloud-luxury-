@@ -172,113 +172,272 @@
 //   export default router;
 
 
+
+
+
+
 import express, { Request, Response } from 'express';
+
 import multer from 'multer';
+
 import fs from 'fs';
+
 import path from 'path';
+
 import Product from '../models/Product';
+
 import { isAdmin } from '../middleware/authAdmin';
 
+
+
 interface AuthRequest extends Request {
+
   user?: any;
+
 }
+
+
 
 const router = express.Router();
 
+
+
 // Ensure uploads folder exists
+
 const uploadDir = 'uploads/';
+
 if (!fs.existsSync(uploadDir)) {
+
   fs.mkdirSync(uploadDir);
+
 }
 
+
+
 const storage = multer.diskStorage({
+
   destination: (req, file, cb) => {
+
     cb(null, uploadDir);
+
   },
+
   filename: (req, file, cb) => {
+
     cb(null, `${Date.now()}-${file.originalname}`);
+
   }
+
 });
 
-const upload = multer({ 
+
+
+const upload = multer({
+
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } 
+
+  limits: { fileSize: 5 * 1024 * 1024 }
+
 });
+
+
 
 router.post('/upload', isAdmin, upload.single('image'), async (req: AuthRequest, res: Response) => {
+
   try {
+
     if (!req.file) return res.status(400).json({ message: "No image file provided" });
 
-    const { name, price, description, category } = req.body;
+
+
+    const { name, price, description, category, subCategory } = req.body;
+
     const newProduct = new Product({
+
       name,
+
       price,
+
       description,
+
       category: category.toLowerCase(),
-      imageUrl: `/uploads/${req.file.filename}`, 
-      ownerEmail: req.user?.email 
+
+      subCategory: subCategory ? subCategory.toLowerCase() : undefined,
+
+      imageUrl: `/uploads/${req.file.filename}`,
+
+      ownerEmail: req.user?.email
+
     });
 
+
+
     const savedProduct = await newProduct.save();
+
     res.status(201).json(savedProduct);
+
   } catch (error) {
+
     console.error("Backend Error:", error);
+
     res.status(500).json({ message: "Error saving product", error });
+
   }
+
 });
 
-router.get('/category/all', async (req: Request, res: Response) => {
+
+
+// 1. GET ALL (Used by the Dashboard Inventory Manager)
+
+router.get('/all', async (req: Request, res: Response) => {
+
   try {
+
     const products = await Product.find().sort({ createdAt: -1 });
+
     res.json(products);
+
   } catch (error) {
+
     res.status(500).json({ message: "Error fetching all products", error });
+
   }
+
 });
 
-  router.get('/category/:catName', async (req: Request, res: Response) => {
-    try {
-      const products = await Product.find({ category: req.params.catName.toLowerCase() });
-      res.json(products);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching products", error });
-    }
-  });
 
+
+// 2. GET BY CATEGORY (Used by the Shop pages)
+
+router.get('/category/:catName', async (req: Request, res: Response) => {
+
+  try {
+
+    const products = await Product.find({ category: req.params.catName.toLowerCase() });
+
+    res.json(products);
+
+  } catch (error) {
+
+    res.status(500).json({ message: "Error fetching products", error });
+
+  }
+
+});
+
+
+
+// 3. GET BY SUB-CATEGORY
+
+router.get('/:catName/:subName', async (req: Request, res: Response) => {
+
+  try {
+
+    const { catName, subName } = req.params;
+
+    const products = await Product.find({
+
+      category: catName.toLowerCase(),
+
+      subCategory: subName.toLowerCase()
+
+    }).sort({ createdAt: -1 });
+
+    res.json(products);
+
+  } catch (error) {
+
+    res.status(500).json({ message: "Error fetching filtered products", error });
+
+  }
+
+});
+
+
+
+// 4. UPDATE PRODUCT
 
 router.put('/:id', isAdmin, async (req: Request, res: Response) => {
+
   try {
-    const { name, price, description, category } = req.body;
+
+    const { name, price, description, category, subCategory } = req.body;
+
     const updatedProduct = await Product.findByIdAndUpdate(
+
       req.params.id,
-      { name, price, description, category: category?.toLowerCase() },
+
+      {
+
+        name,
+
+        price,
+
+        description,
+
+        category: category?.toLowerCase(),
+
+        subCategory: subCategory?.toLowerCase()
+
+      },
+
       { new: true }
+
     );
+
     if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
+
     res.json(updatedProduct);
+
   } catch (error) {
+
     res.status(500).json({ message: "Error updating product", error });
+
   }
+
 });
+
+
+
+// 5. DELETE PRODUCT (With physical file cleanup)
 
 router.delete('/:id', isAdmin, async (req: Request, res: Response) => {
+
   try {
+
     const product = await Product.findByIdAndDelete(req.params.id);
+
     if (!product) return res.status(404).json({ message: "Product not found" });
 
+
+
     if (product.imageUrl) {
-      // Adjusted path logic: relative to backend root
-      const filePath = path.join(process.cwd(), product.imageUrl); 
+
+      const filePath = path.join(process.cwd(), product.imageUrl);
+
       if (fs.existsSync(filePath)) {
+
         fs.unlink(filePath, (err) => {
+
           if (err) console.error("Could not delete file:", err);
+
         });
+
       }
+
     }
-    res.json({ message: "Product and image removed from vault" });
+
+    res.json({ message: "Product and image removed successfully" });
+
   } catch (error) {
+
     res.status(500).json({ message: "Error deleting product", error });
+
   }
+
 });
+
+
 
 export default router;

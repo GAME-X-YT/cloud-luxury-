@@ -81,7 +81,7 @@ const CinematicFooter = () => {
           transition={{ duration: 1, delay: 0.5 }}
           className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8"
         >
-          <div className="text-[9px] tracking-[0.4em] text-gray-600 uppercase">
+          <div className="text-[9px] tracking-[0.4em] text-gray-600 uppercase satisfy-regular">
             © 2026 CLOUD LUXURY. ALL RIGHTS RESERVED.
           </div>
           

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ShoppingBag, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import GliteNavbar from "../component/gliteNavbar";
 
 // 1. Define the TypeScript structure for your uploaded backend items
@@ -17,6 +17,7 @@ interface JewelryItem {
 const JewelryCollections = () => {
   const [jewelry, setJewelry] = useState<JewelryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(true);
 
   // 2. Fetch data from your backend
   useEffect(() => {
@@ -37,18 +38,30 @@ const JewelryCollections = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-[#050505]">
-      {/* Sidebar Spacer */}
-      <div className="w-64 flex-shrink-0" />
-      <GliteNavbar />
+    <div className="min-h-screen bg-[#050505] text-white">
+      <GliteNavbar isOpen={isNavOpen} setIsOpen={setIsNavOpen} />
 
-      <main className="flex-1 p-10">
+
+      <motion.main 
+        initial={false}
+        animate={{ 
+          // Adjust padding so content pushes/pulls when nav opens/closes
+          paddingLeft: isNavOpen ? "256px" : "0px", 
+        }}
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="flex-1 w-full"
+      ></motion.main>
+      {/* Responsive Layout: 
+          - No margin on mobile
+          - pl-64 (sidebar width) on large screens */}
+      <main className="transition-all duration-300 lg:pl-64 p-5 md:p-10">
+        
         {/* Header Section */}
-        <header className="mb-12 border-b border-white/5 pb-8">
-          <h2 className="text-4xl font-bold text-white mb-2">
+        <header className="mt-16 lg:mt-0 mb-12 border-b border-white/5 pb-8">
+          <h2 className="text-3xl md:text-4xl font-bold mb-2">
             The <span className="text-yellow-500">Glitz</span> Gallery
           </h2>
-          <p className="text-neutral-500 italic">Exclusive jewelry pieces, hand-selected for aura.</p>
+          <p className="text-neutral-500 italic text-sm md:text-base">Exclusive jewelry pieces, hand-selected for aura.</p>
         </header>
 
         {loading ? (
@@ -57,42 +70,37 @@ const JewelryCollections = () => {
             <span>Consulting the vault...</span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-10">
+          /* Responsive Grid: 1 col on mobile, 2 on tablet, 3-4 on desktop */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-10">
             {jewelry.length > 0 ? (
-              jewelry.map((item, index) => (
+              jewelry.map((item) => (
                 <motion.div
                   key={item._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative bg-neutral-900/40 border border-white/5 rounded-[2.5rem] p-4 hover:border-yellow-500/30 transition-all duration-500"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="group bg-neutral-900/40 border border-white/5 rounded-4xl p-4"
                 >
-                  {/* Product Image */}
-                  <div className="relative h-64 w-full overflow-hidden rounded-[2rem] bg-neutral-800">
+                  <div className="relative h-64 w-full overflow-hidden rounded-3xl bg-neutral-800">
                     <img
                       src={`http://localhost:5000${item.imageUrl}`}
                       alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
-                    {/* Price Tag Overlay */}
-                    <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
-                      <span className="text-yellow-500 font-bold">${item.price}</span>
+                    <div className="absolute top-3 right-3 bg-black/70 px-3 py-1 rounded-full border border-white/10">
+                      <span className="text-yellow-500 text-sm font-bold">${item.price}</span>
                     </div>
                   </div>
 
-                  {/* Product Info */}
-                  <div className="mt-6 px-2 text-center">
-                    <h3 className="text-xl font-bold text-white mb-4 line-clamp-1">{item.name}</h3>
-                    
-                    <button className="w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black font-black rounded-2xl flex items-center justify-center gap-2 hover:from-yellow-500 hover:to-yellow-300 transform active:scale-95 transition-all shadow-[0_10px_20px_rgba(234,179,8,0.2)]">
-                      <ShoppingBag size={18} />
+                  <div className="mt-4 text-center">
+                    <h3 className="text-lg font-bold mb-4">{item.name}</h3>
+                    <button className="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl active:scale-95 transition-all">
                       ORDER PIECE
                     </button>
                   </div>
                 </motion.div>
               ))
             ) : (
-              <p className="text-neutral-500">The vault is currently empty. Check back soon.</p>
+              <p className="text-neutral-500 col-span-full text-center">The vault is currently empty.</p>
             )}
           </div>
         )}

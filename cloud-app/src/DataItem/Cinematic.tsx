@@ -354,6 +354,7 @@ const CinematicFinalSection = () => {
       <motion.button
         initial={{ x: 100, opacity: 0 }}
         whileInView={{ x: 0, opacity: 1 }}
+        onClick={() => window.location.href = '/wardrobe'}
         className="absolute top-6 right-6 md:top-10 md:right-10 px-4 py-1.5 md:px-8 md:py-2 border border-white/20 rounded-full font-medium tracking-wide overflow-hidden group z-50 bg-black/20 backdrop-blur-sm"
       >
         <motion.div initial={{ x: "-100%" }} whileHover={{ x: 0 }} className="absolute inset-0 bg-slate-800 z-0" />

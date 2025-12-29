@@ -1,129 +1,134 @@
-  import { useEffect, useState } from "react";
-  import ShoeNavbar from "../component/shoeNavbar";
-  // Import your API instance
-  import { motion } from "framer-motion";
-  import { getAllShoes } from '../api/api'; 
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, ShoppingCart, Info } from "lucide-react";
+import ShoeNavbar from "../component/shoeNavbar";
 
-  interface Shoe {
-    _id: string; // Backend usually uses _id
-    name: string;
-    price: string | number;
-    image: string; // The URL from Cloudinary/Backend
-    description?: string;
-  }
+interface ShoeItem {
+  _id: string;
+  name: string;
+  imageUrl: string;
+  price: number;
+  description?: string;
+}
 
-  const Shoes = () => {
-    const [shoes, setShoes] = useState<Shoe[]>([]);
-    const [loading, setLoading] = useState(true);
+const ShoePage = () => {
+  const [shoes, setShoes] = useState<ShoeItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isNavOpen, setIsNavOpen] = useState(true);
 
-    useEffect(() => {
-      const fetchShoes = async () => {
-        try {
-          const res = await getAllShoes(); // Assuming this is your API function
-          // If your backend returns data in a specific structure, adjust here:
-          setShoes(res.data.shoes || res.data); 
-        } catch (error) {
-          console.error("Failed to fetch shoes:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
+  // Fetch only shoes from the backend
+  useEffect(() => {
+    const fetchShoes = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/products/category/shoes");
+        setShoes(response.data);
+      } catch (error) {
+        console.error("Error fetching shoes:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchShoes();
+  }, []);
 
-      fetchShoes();
-    }, []);
+  return (
+    <div className="flex min-h-screen bg-[#030303] text-white selection:bg-yellow-500/30">
+      {/* Specialized Shoe Navigation */}
+      <ShoeNavbar isOpen={isNavOpen} setIsOpen={setIsNavOpen} />
 
-    return (
-  <div className="min-h-screen bg-slate-50 relative overflow-hidden">
-    {/* Animated Background Decor */}
-    <div className="fixed top-0 left-0 w-full h-full -z-10">
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-purple-200/50 blur-[120px]" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-200/50 blur-[120px]" />
-    </div>
-
-    <ShoeNavbar />
-
-    {/* Header Section */}
-    <header className="relative pt-40 pb-16 text-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-      >
-        <h1 className="text-6xl md:text-7xl rancho-regular bg-gradient-to-r from-purple-900 via-indigo-800 to-purple-900 bg-clip-text text-transparent mb-4">
-          Shoes Collection
-        </h1>
-        <div className="h-1 w-24 bg-purple-500 mx-auto rounded-full mb-6" />
-        <p className="max-w-2xl mx-auto text-lg text-slate-600 trade-winds-regular leading-relaxed">
-          Step into elegance. Explore our curated selection of premium footwear designed for style and absolute comfort.
-        </p>
-      </motion.div>
-    </header>
-
-    {loading ? (
-      <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
-        <p className="mt-4 text-purple-800 font-semibold animate-pulse">Refining the collection...</p>
-      </div>
-    ) : (
-      <motion.div 
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: { opacity: 0 },
-          visible: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 }
-          }
+      <motion.main 
+        animate={{ 
+          paddingLeft: isNavOpen && window.innerWidth > 1024 ? "256px" : "0px" 
         }}
-        className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
+        transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        className="flex-1 px-8 py-12 md:p-20"
       >
-        {shoes.length > 0 ? (
-          shoes.map((shoe) => (
-            <motion.div
-              key={shoe._id}
-              variants={{
-                hidden: { y: 20, opacity: 0 },
-                visible: { y: 0, opacity: 1 }
-              }}
-              whileHover={{ y: -10 }}
-              className="group relative bg-white border border-slate-100 rounded-[2rem] p-3 shadow-sm hover:shadow-2xl transition-all duration-500"
-            >
-              {/* Image Container */}
-              <div className="relative h-72 w-full overflow-hidden rounded-[1.5rem] bg-slate-100">
-                <img
-                  src={shoe.image}
-                  alt={shoe.name}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
-                  <span className="text-sm font-bold text-purple-700">${shoe.price}</span>
-                </div>
-              </div>
+        {/* Shoe Department Header */}
+        <header className="max-w-6xl mx-auto mb-20">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="text-yellow-500 text-[10px] font-bold tracking-[0.6em] uppercase block mb-4">
+              Premium Footwear Division
+            </span>
+            <h1 className="text-5xl md:text-7xl font-serif italic text-white leading-tight">
+              The <span className="text-neutral-500">Art</span> of the <br /> 
+              <span className="text-yellow-500">Perfect</span> Stride.
+            </h1>
+            <div className="h-px w-32 bg-linear-to-r from-yellow-500 to-transparent mt-8" />
+          </motion.div>
+        </header>
 
-              {/* Content */}
-              <div className="p-6 text-center">
-                <h2 className="text-xl font-bold text-slate-800 cinzel-bold mb-2 group-hover:text-purple-700 transition-colors">
-                  {shoe.name}
-                </h2>
-                <p className="text-sm text-slate-500 mb-6 line-clamp-2">
-                  Premium craftsmanship meets modern design in every stitch.
-                </p>
-                <button className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold overflow-hidden relative group/btn transition-all active:scale-95">
-                  <span className="relative z-10">Shop Now</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
-                </button>
-              </div>
-            </motion.div>
-          ))
+        {loading ? (
+          <div className="flex flex-col h-96 items-center justify-center">
+            <Loader2 className="animate-spin text-yellow-500 mb-4" size={32} />
+            <p className="text-neutral-600 text-xs uppercase tracking-widest">Entering the Vault...</p>
+          </div>
         ) : (
-          <div className="col-span-full text-center py-20 bg-white/50 backdrop-blur-sm rounded-3xl border border-dashed border-slate-300">
-            <p className="text-slate-500 text-xl italic">Our new arrivals are currently in transit. Check back soon!</p>
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12">
+            <AnimatePresence>
+              {shoes.map((shoe, index) => (
+                <motion.div
+                  key={shoe._id}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.15, duration: 0.6 }}
+                  className="group relative"
+                >
+                  {/* Image Display */}
+                  <div className="relative aspect-square overflow-hidden rounded-[3rem] bg-[#0a0a0a] border border-white/5 shadow-2xl">
+                    <motion.img
+                      whileHover={{ scale: 1.1, rotate: -2 }}
+                      transition={{ duration: 0.6 }}
+                      src={`http://localhost:5000${shoe.imageUrl}`}
+                      alt={shoe.name}
+                      className="w-full h-full object-contain p-8"
+                    />
+                    
+                    {/* Hover Interaction Overlay */}
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
+                       <button className="flex items-center gap-2 bg-yellow-500 text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-yellow-400 transition-colors">
+                          <ShoppingCart size={16} /> Order Now
+                       </button>
+                       <button className="flex items-center gap-2 text-white/70 hover:text-white text-[10px] uppercase tracking-widest transition-colors">
+                          <Info size={14} /> View Details
+                       </button>
+                    </div>
+
+                    {/* Price Tag Overlay */}
+                    <div className="absolute bottom-8 left-8">
+                       <p className="text-2xl font-light text-white">${shoe.price}</p>
+                    </div>
+                  </div>
+
+                  {/* Text Details */}
+                  <div className="mt-8 text-center">
+                    <h3 className="text-xl font-serif italic text-white mb-2">{shoe.name}</h3>
+                    <div className="flex justify-center gap-1">
+                       <div className="w-1 h-1 rounded-full bg-yellow-500" />
+                       <div className="w-1 h-1 rounded-full bg-neutral-800" />
+                       <div className="w-1 h-1 rounded-full bg-neutral-800" />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
         )}
-      </motion.div>
-    )}
-  </div>
-);
-  };
 
-  export default Shoes;
+        {/* Empty State */}
+        {!loading && shoes.length === 0 && (
+          <div className="flex flex-col items-center justify-center py-40">
+            <p className="text-neutral-500 font-serif italic text-xl">The footwear collection is currently being curated.</p>
+            <button className="mt-6 text-yellow-500 text-xs uppercase tracking-widest border-b border-yellow-500/30 pb-1">Notify me of arrivals</button>
+          </div>
+        )}
+      </motion.main>
+    </div>
+  );
+};
+
+export default ShoePage;

@@ -337,7 +337,7 @@ export default function Profile() {
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-8">
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row bg-white dark:bg-gray-800 shadow-xl rounded-[2rem] overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row bg-white dark:bg-gray-800 shadow-xl rounded-4xl overflow-hidden border border-gray-100 dark:border-gray-700">
                 
                 {/* --- Left Sidebar --- */}
                 <div className="w-full md:w-80 bg-gray-50 dark:bg-gray-800/50 border-r border-gray-200 dark:border-gray-700 p-8">

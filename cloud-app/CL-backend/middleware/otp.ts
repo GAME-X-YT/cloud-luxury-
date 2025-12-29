@@ -25,7 +25,39 @@ export const generateAndSendOTP = async (email: string, subject: string): Promis
     });
     
     // 4. Send the email notification
-    const emailBody = `Your security code is: ${otp}. This code is valid for 3 minutes.`;
+    const emailBody = `
+    <div style="background-color: #000000; padding: 40px 20px; font-family: 'Georgia', serif; text-align: center; color: #ffffff;">
+    <div style="max-width: 600px; margin: 0 auto; border: 1px solid #c5a059; padding: 40px;">
+        
+        <h1 style="color: #c5a059; font-size: 26px; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 10px; font-weight: normal;">Cloud Luxury</h1>
+        <p style="color: #ffffff; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px;">Identity Authentication</p>
+
+        <p style="color: #b5b5b5; font-size: 14px; line-height: 1.8; margin-bottom: 30px; letter-spacing: 0.5px;">
+        For your security, please use the following one-time passcode to verify your request. This code is unique to your session.
+        </p>
+
+        <div style="background-color: #0a0a0a; border: 1px solid #c5a059; padding: 30px; margin: 30px 0;">
+        <p style="color: #c5a059; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; margin-top: 0;">Verification Code</p>
+        <span style="font-family: 'Courier New', monospace; font-size: 42px; color: #ffffff; font-weight: bold; letter-spacing: 12px; display: block;">
+            ${otp}
+        </span>
+        </div>
+
+        <div style="margin-top: 25px;">
+        <p style="color: #777; font-size: 12px; font-style: italic;">
+            This security code is valid for <span style="color: #c5a059;">3 minutes</span> only.
+        </p>
+        </div>
+
+        <div style="margin-top: 50px; border-top: 1px solid #222; padding-top: 25px;">
+        <p style="color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; line-height: 1.5;">
+            If you did not initiate this request, your account may be at risk. <br>Please update your security credentials immediately.
+        </p>
+        </div>
+
+    </div>
+    </div>
+    `;
 
     await sendEmail(
         email, 

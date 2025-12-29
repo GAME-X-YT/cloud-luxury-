@@ -1,146 +1,125 @@
-import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Home, ShoppingBag, LogIn, Tag, BookOpen, Menu, X, Search } from "lucide-react";
-import SearchBar from "./SearchBar";
+import { motion } from "framer-motion";
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { 
+  Menu,
+   X,
+  Briefcase, 
+  Footprints, 
+  Users, 
+  Flower2, 
+  ShoppingBag, 
+  Trophy, 
+  GraduationCap 
+} from "lucide-react";
+// import { faSnowman  } from "@fortawesome/free-solid-svg-icons";
 
-const ShoeNavbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [showNavbar, setShowNavbar] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [showSearch, setShowSearch] = useState(false);
+// The data for your sub-categories
+const shoeLinks = [
+  { name: 'Office Wear', slug: 'office-wear', icon: Briefcase },
+  { name: 'Sneakers', slug: 'sneakers', icon: Footprints },
+  { name: 'Unisex', slug: 'unisex', icon: Users },
+  { name: 'Heels', slug: 'heels', icon: ShoppingBag },
+  { name: 'Ladies Flats', slug: 'ladies-flats', icon: Flower2 },
+  { name: 'Loafers', slug: 'loafers', icon: ShoppingBag },
+  { name: 'Sport', slug: 'sport', icon: Trophy },
+  { name: 'School', slug: 'school', icon: GraduationCap },
+];
 
-  const navRef = useRef<HTMLDivElement>(null);
+interface NavProps {
+  isOpen: boolean;
+  setIsOpen: (val: boolean) => void;
+}
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        setShowNavbar(false);
-        setIsOpen(false);
-      } else {
-        setShowNavbar(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
-  // Handle click outside to close mobile menu
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (isOpen && navRef.current && !navRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen]);
-
-  const navLinks = [
-    { name: "Home", path: "/", icon: <Home size={18} /> },
-    { name: "Men Shoes", path: "/shop", icon: <ShoppingBag size={18} /> },
-    { name: "Ladies Shoes", path: "/Wardrobe", icon: <Tag size={18} /> },
-    { name: "Couples", path: "/signin", icon: <LogIn size={18} /> },
-    { name: "Blog", path: "/blog", icon: <BookOpen size={18} /> },
-  ];
-
+const ShoeNavbar: React.FC<NavProps> = ({ isOpen, setIsOpen }) => {
   return (
-    <motion.nav
-      ref={navRef}
-      initial={{ y: -100, x: "-50%" }}
-      animate={{ y: showNavbar ? 0 : -120, x: "-50%" }}
-      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
-      className="fixed left-1/2 z-50 w-[95%] max-w-6xl mt-5"
-    >
-      <div className="backdrop-blur-xl bg-white/30 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] rounded-3xl overflow-hidden">
-        <div className="px-6 py-3 flex justify-between items-center">
-          
-          {/* Logo Section */}
-          <Link to="/" className="flex items-center group">
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-800 to-indigo-600 bg-clip-text text-transparent tangerine-regular">
-              Cloud Collections
-            </span>
-          </Link>
+    <>
+      {/* 1. FLOATING TOGGLE BUTTON (Visible when menu is closed) */}
+      {!isOpen && (
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={() => setIsOpen(true)}
+          className="fixed left-6 top-6 z-60 p-4 bg-yellow-500 text-black rounded-2xl shadow-2xl hover:scale-110 transition-transform"
+        >
+          <Menu size={20} strokeWidth={3} />
+        </motion.button>
+      )}
 
-          {/* Desktop Menu */}
-          <ul className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <li key={link.name}>
-                <Link
-                  to={link.path}
-                  className="relative flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-800 transition-colors hover:text-purple-700 group"
-                >
-                  {link.icon}
-                  {link.name}
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-purple-600 scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-
-          {/* Action Icons */}
-          <div className="flex items-center space-x-4">
+      {/* 2. THE MAIN SIDEBAR */}
+      <motion.nav 
+        initial={false}
+        animate={{ 
+          x: isOpen ? 0 : -256, // Slides the whole bar off-screen
+          opacity: isOpen ? 1 : 0 
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="fixed left-0 top-0 h-full w-64 bg-[#050505] border-r border-white/5 z-50 shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
+      >
+        <div className="p-8 h-full flex flex-col">
+          {/* HEADER WITH CLOSE ICON */}
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-yellow-500 font-black text-[10px] tracking-[0.4em] uppercase">
+              Footwear Menu
+            </h2>
             <button 
-              onClick={() => setShowSearch(!showSearch)}
-              className="p-2 text-gray-800 hover:bg-white/40 rounded-full transition-all"
+              onClick={() => setIsOpen(false)}
+              className="text-neutral-500 hover:text-white p-1 transition-colors"
             >
-              <Search size={20} />
-            </button>
-            
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 text-gray-800 hover:bg-white/40 rounded-full transition-all"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
+              <X size={20} />
             </button>
           </div>
-        </div>
 
-        {/* Integrated SearchBar Container */}
-        <AnimatePresence>
-          {showSearch && (
-            <motion.div 
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="px-6 pb-4"
-            >
-              <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Mobile Menu Overlay */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="md:hidden border-t border-white/20 bg-white/10"
-            >
-              <ul className="flex flex-col p-4 space-y-2">
-                {navLinks.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      to={link.path}
-                      onClick={() => setIsOpen(false)}
-                      className="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/40 text-gray-900 font-medium transition-all"
-                    >
-                      <span className="text-purple-700">{link.icon}</span>
+          {/* NAV LINKS */}
+          <ul className="space-y-4 flex-1">
+            {shoeLinks.map((link) => {
+              const Icon = link.icon;
+              return (
+                <li key={link.slug}>
+                  <Link 
+                    to={`/shoes/${link.slug}`} 
+                    target="_blank" 
+                    className="group flex items-center gap-4 text-neutral-400 hover:text-white transition-all py-2"
+                  >
+                    <div className="p-2 rounded-lg bg-white/5 group-hover:bg-yellow-500/10 group-hover:text-yellow-500 transition-colors">
+                      <Icon size={18} />
+                    </div>
+                    <span className="text-sm font-medium tracking-wide group-hover:translate-x-1 transition-transform">
                       {link.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.nav>
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-auto pt-8 border-t border-white/5">
+            <Link to="/" className="flex items-center text-[11px] text-neutral-500 hover:text-white uppercase tracking-widest transition-colors group">
+              <FontAwesomeIcon icon={faArrowLeft} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              Main store
+            </Link>
+          </div>
+
+          {/* OPTIONAL BOTTOM FOOTER */}
+          <div className="mt-auto pt-6 border-t border-white/5">
+            <p className="text-[10px] text-neutral-600 uppercase tracking-widest text-center">
+              Premium Collection 2025
+            </p>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* 3. BACKGROUND OVERLAY (Closes menu when clicking outside) */}
+      {isOpen && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden" 
+        />
+      )}
+    </>
   );
 };
 
