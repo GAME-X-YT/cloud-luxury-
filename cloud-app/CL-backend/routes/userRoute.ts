@@ -1,5 +1,15 @@
 import  express from "express";
-import { registerUser, loginUser, deleteUser, requestDeleteOTP, getProfileController, activateAccount, loginOTPRequest} from "../control/userController";
+import { 
+  registerUser, 
+  loginUser, 
+  deleteUser, 
+  requestDeleteOTP, 
+  getProfileController, 
+  activateAccount, 
+  loginOTPRequest,
+  forgotPasswordRequest, 
+  resetPassword   
+} from "../control/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
 
 
@@ -12,6 +22,8 @@ router.post("/register", registerUser);
 router.post("/activate", activateAccount);
 router.post("/delete-request", authMiddleware, requestDeleteOTP);
 router.post("/login", loginUser);
+router.post("/forgot-password-request", forgotPasswordRequest);
+router.post("/reset-password", resetPassword);
 router.post("/login-otp-request", loginOTPRequest);
 router.get("/profile", authMiddleware, getProfileController);
 // Delete user account

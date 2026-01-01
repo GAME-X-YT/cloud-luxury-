@@ -29,3 +29,4 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     res.status(401).json({ message: "Token is not valid" });
   }
 };
+

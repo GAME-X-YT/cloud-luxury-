@@ -122,6 +122,7 @@ interface NavbarProps {
 
 const GliteNavbar = ({ isOpen, setIsOpen }: NavbarProps) => {
   
+  
   const containerVariants = {
     hidden: { x: -256, opacity: 0 },
     visible: { 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
@@ -6,12 +7,13 @@ import GliteNavbar from "../component/gliteNavbar";
 
 // 1. Define the TypeScript structure for your uploaded backend items
 interface JewelryItem {
-  _id: string; // MongoDB uses _id
+  _id: string; 
   name: string;
   image?: string;
-  imageUrl: string; // ADD THIS LINE
+  imageUrl: string; 
   price: number;
   category: string;
+  subCategory: string;
 }
 
 const JewelryCollections = () => {
@@ -93,10 +95,14 @@ const JewelryCollections = () => {
 
                   <div className="mt-4 text-center">
                     <h3 className="text-lg font-bold mb-4">{item.name}</h3>
-                    <button className="w-full py-3 bg-yellow-500 text-black font-bold rounded-xl active:scale-95 transition-all">
-                      ORDER PIECE
-                    </button>
-                  </div>
+                    {/* CHANGE: This now links to the specific category section */}
+                  <Link 
+                    to={`/jewelry/${item.subCategory.toLowerCase()}`}
+                    className="block w-full py-3 bg-white text-black text-center font-bold rounded-xl active:scale-95 transition-all hover:bg-yellow-500"
+                  >
+                    VIEW COLLECTION
+                  </Link>
+                 </div>
                 </motion.div>
               ))
             ) : (

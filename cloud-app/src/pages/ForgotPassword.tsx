@@ -1,4 +1,4 @@
-
+import { toast } from 'sonner';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { forgotPasswordRequest } from "../api/api";
@@ -22,6 +22,10 @@ export default function ForgotPassword() {
             const res = await forgotPasswordRequest({ email }); 
             
             setSuccess(res.data.message || "Password reset instructions sent to your email.");
+
+            toast.success("Request Sent", {
+            description: res.data.message,
+        });
             
             // 💡 Optional: Automatically navigate to the ResetPassword page, 
             // assuming the user will click the link in the email or enter the OTP.

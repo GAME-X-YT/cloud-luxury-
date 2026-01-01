@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2  } from "lucide-react";
 import ShoeNavbar from "../component/shoeNavbar"; 
+import { useCart } from "../context/CartContext";
+import { Toast } from "../pages/Toast";
 
 interface ShoeItem {
   _id: string;
@@ -12,6 +14,86 @@ interface ShoeItem {
   price: number;
   description?: string;
 }
+
+const ShoeItem = ({ shoe, index }: { shoe: ShoeItem, index: number }) => {
+  const [qty, setQty] = useState(1);
+  const [showToast, setShowToast] = useState(false);
+  const { addToCart } = useCart();
+
+  // This handles both the data logic and the stylish Toast notification
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart({
+      _id: shoe._id,
+      name: shoe.name,
+      price: shoe.price,
+      imageUrl: shoe.imageUrl
+    }, qty);
+    
+    setShowToast(true);
+    // Auto-hide the Toast after 3 seconds
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      transition={{ delay: index * 0.1 }} 
+      className="group"
+    >
+      <div className="relative aspect-square overflow-hidden rounded-[3rem] bg-[#0a0a0a] border border-white/5">
+        <img 
+          src={`http://localhost:5000${shoe.imageUrl}`} 
+          className="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-500" 
+          alt={shoe.name} 
+        />
+        
+        <div className="absolute bottom-8 left-8 right-8 flex justify-between items-center z-10">
+           <p className="text-2xl font-light">₦{shoe.price.toLocaleString()}</p>
+           
+           {/* Add To Cart Button with Counter */}
+           <div className="flex items-center bg-black/60 backdrop-blur-md rounded-full border border-white/10 overflow-hidden">
+              <button 
+                onClick={(e) => { e.stopPropagation(); setQty(Math.max(1, qty - 1)); }} 
+                className="px-3 py-1 hover:bg-white/10 text-white"
+              >
+                -
+              </button>
+              <span className="px-2 text-xs font-bold text-white">{qty}</span>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setQty(qty + 1); }} 
+                className="px-3 py-1 hover:bg-white/10 text-white"
+              >
+                +
+              </button>
+
+              <button 
+                onClick={handleAddToCart}
+                className="bg-yellow-500 text-black px-4 py-2 text-[10px] font-black uppercase ml-2 hover:bg-yellow-400 transition-colors"
+              >
+                Order
+              </button>
+           </div>
+        </div>
+      </div>
+
+      <h3 className="mt-6 text-xl font-serif italic text-center">{shoe.name}</h3>
+      {shoe.description && (
+        <p className="mt-2 text-neutral-400 text-sm text-center line-clamp-2 px-4 italic">
+          {shoe.description}
+        </p>
+      )}
+
+      <Toast 
+        message={`${qty} ${shoe.name} added to your bag.`} 
+        isVisible={showToast} 
+        onClose={() => setShowToast(false)} 
+      />
+
+    </motion.div>
+  );
+};
 
 const ShoeCategoryPage = () => {
   const { type } = useParams<{ type: string }>(); 
@@ -60,31 +142,7 @@ const ShoeCategoryPage = () => {
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-12">
             <AnimatePresence>
               {shoes.map((shoe, index) => (
-                <motion.div
-                  key={shoe._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group"
-                >
-                  <div className="relative aspect-square overflow-hidden rounded-[3rem] bg-[#0a0a0a] border border-white/5">
-                    <img 
-                      src={`http://localhost:5000${shoe.imageUrl}`} 
-                      alt={shoe.name} 
-                      className="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-500" 
-                    />
-                    <div className="absolute bottom-8 left-8">
-                       <p className="text-2xl font-light">${shoe.price}</p>
-                    </div>
-                  </div>
-                  <h3 className="mt-6 text-xl font-serif italic text-center">{shoe.name}</h3>
-
-                  {shoe.description && (
-                <p className="mt-2 text-neutral-400 text-sm text-center line-clamp-2 px-4 italic">
-                    {shoe.description}
-                </p>
-                )}
-                </motion.div>
+                <ShoeItem key={shoe._id} shoe={shoe} index={index} />
               ))}
             </AnimatePresence>
           </div>

@@ -90,6 +90,7 @@ const Collections = () => {
       title: "DESIGN PHILOSOPHY", 
       desc: "How we blend culture with luxury.", 
       icon: <BookOpen className="text-purple-400" />,
+      
       img: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1000",
       link: "/blog"
     }
@@ -146,7 +147,11 @@ const Collections = () => {
                   <span className="text-xs font-bold tracking-[0.3em] uppercase">{feat.title}</span>
                 </div>
                 <h3 className="text-3xl font-bold mb-6">{feat.desc}</h3>
-                <Link to={feat.link} className="inline-flex items-center gap-2 text-sm font-bold border-b border-white/20 pb-2 hover:border-purple-500 transition-colors">
+                <Link 
+                to={feat.link}
+                target="_blank"             // Opens in a new tab
+                rel="noopener noreferrer"
+                 className="inline-flex items-center gap-2 text-sm font-bold border-b border-white/20 pb-2 hover:border-purple-500 transition-colors">
                   DISCOVER MORE <MoveRight size={16} />
                 </Link>
               </div>
@@ -184,6 +189,8 @@ const Collections = () => {
                   <h4 className="text-xl font-bold mb-6">{item.name}</h4>
                   <Link
                     to={`/order/${item._id}`}
+                    target="_blank"             // Opens in a new tab
+                     rel="noopener noreferrer"
                     className="flex items-center justify-between w-full py-4 px-6 bg-white text-black rounded-2xl font-bold hover:bg-purple-600 hover:text-white transition-all transform active:scale-95"
                   >
                     <span className="text-xs uppercase tracking-tighter">Acquire Piece</span>

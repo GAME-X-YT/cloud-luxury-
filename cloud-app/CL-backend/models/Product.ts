@@ -5,7 +5,7 @@ export interface IProduct extends Document {
   price: number;
   description: string;
   imageUrl: string;
-  category: 'shoes' | 'fall-clothes' | 'jewelry' | 'Tshirt' | 'baggy-jeans' | 'watches' | 'shorts' | 'couples-outfit' | 'hoodie';
+  category: 'shoes' | 'fall-clothes' | 'jewelry' | 'tshirt' | 'baggy-jeans' | 'watches' | 'shorts' | 'couples-outfit' | 'hoodie';
   subCategory?: string;
   ownerEmail: string; // Tracks which of the 4 owners uploaded it
 }
@@ -18,7 +18,7 @@ const ProductSchema = new Schema<IProduct>({
   category: { 
     type: String, 
     required: true, 
-    enum: ['shoes', 'fall-clothes', 'jewelry', 'Tshirt', 'baggy-jeans', 'watches', 'shorts', 'couples-outfit', 'hoodie'] 
+    enum: ['shoes', 'fall-clothes', 'jewelry', 'tshirt', 'baggy-jeans', 'watches', 'shorts', 'couples-outfit', 'hoodie'] 
   },
   subCategory: { type: String },
   ownerEmail: { type: String, required: true }

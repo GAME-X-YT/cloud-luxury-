@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, ShoppingCart, Info } from "lucide-react";
+import { 
+  Loader2, 
+  // ShoppingCart, 
+  Eye 
+} from "lucide-react";
 import ShoeNavbar from "../component/shoeNavbar";
 
 interface ShoeItem {
@@ -10,6 +15,8 @@ interface ShoeItem {
   imageUrl: string;
   price: number;
   description?: string;
+  category: string;
+  subCategory: string;
 }
 
 const ShoePage = () => {
@@ -90,12 +97,15 @@ const ShoePage = () => {
                     
                     {/* Hover Interaction Overlay */}
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center gap-4 backdrop-blur-sm">
-                       <button className="flex items-center gap-2 bg-yellow-500 text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-yellow-400 transition-colors">
+                       {/* <button className="flex items-center gap-2 bg-yellow-500 text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-yellow-400 transition-colors">
                           <ShoppingCart size={16} /> Order Now
-                       </button>
-                       <button className="flex items-center gap-2 text-white/70 hover:text-white text-[10px] uppercase tracking-widest transition-colors">
-                          <Info size={14} /> View Details
-                       </button>
+                       </button> */}
+                       <Link 
+                        to={`/shoes/${shoe.subCategory.toLowerCase().replace(/\s+/g, '-')}`}
+                        className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold text-xs uppercase tracking-tighter hover:bg-yellow-500 transition-colors"
+                      >
+                        <Eye size={16} /> View Collection
+                      </Link>
                     </div>
 
                     {/* Price Tag Overlay */}

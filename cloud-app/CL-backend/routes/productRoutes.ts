@@ -400,6 +400,7 @@ router.put('/:id', isAdmin, async (req: Request, res: Response) => {
 
 
 
+
 // 5. DELETE PRODUCT (With physical file cleanup)
 
 router.delete('/:id', isAdmin, async (req: Request, res: Response) => {

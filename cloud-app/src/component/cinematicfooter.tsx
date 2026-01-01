@@ -1,10 +1,56 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+
+interface FooterItem {
+  label: string;
+  path: string;
+}
+
+interface FooterColumn {
+  title: string;
+  items: FooterItem[];
+}
+
+interface SocialItem {
+  name: string;
+  url: string;
+}
 
 const CinematicFooter = () => {
-  const footerLinks = [
-    { title: "collections", items: ["Hoodies", "T-shirts", "Accessories", "Shoes", "MORE"] },
-    { title: "SITE", items: ["Our Story", "Blog", "wardrobe", "Contact", "App info"] },
-    { title: "Legal", items: ["Privacy Policy", "Terms of Use", "help center"] }
+  const footerLinks: FooterColumn[] = [
+  { 
+    title: "collections", 
+    items: [
+      { label: "Hoodies", path: "/hoodie" },
+      { label: "T-shirts", path: "/tshirt" },
+      { label: "Accessories", path: "/jewelry" },
+      { label: "Shoes", path: "/shoes" },
+      { label: "MORE", path: "/wardrobe" }
+    ] 
+  },
+  { 
+    title: "SITE", 
+    items: [
+      { label: "Our Story", path: "/about" },
+      { label: "Blog", path: "/blog" },
+      { label: "wardrobe", path: "/wardrobe" },
+      { label: "Contact", path: "/contact" },
+      { label: "App info", path: "/info" }
+    ] 
+  },
+  { 
+    title: "Legal", 
+    items: [
+      { label: "Privacy Policy", path: "/privacy" },
+      { label: "Terms of Use", path: "/terms" },
+      { label: "help center", path: "/help" }
+    ] 
+  }
+];
+const socials: SocialItem[] = [
+    { name: 'Instagram', url: 'https://instagram.com/cloudluxury' },
+    { name: 'Tiktok', url: 'https://tiktok.com/@cloudluxury' },
+    { name: 'Youtube', url: 'https://youtube.com/cloudluxury' }
   ];
 
   return (
@@ -60,13 +106,15 @@ const CinematicFooter = () => {
               <ul className="flex flex-col gap-3">
                 {column.items.map((item, i) => (
                   <li key={i}>
-                    <a 
-                      href="#" 
+                    <Link
+                     to={item.path}
+                     target="_blank"
+                     rel="noopener noreferrer"
                       className="text-[12px] text-gray-400 hover:text-white transition-all duration-300 uppercase tracking-widest relative group inline-block"
                     >
-                      {item}
+                     {item.label}
                       <span className="absolute -bottom-1 left-0 w-0 h-px bg-white/40 transition-all duration-300 group-hover:w-full" />
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -86,9 +134,15 @@ const CinematicFooter = () => {
           </div>
           
           <div className="flex gap-10">
-            {['Instagram', 'Tiktok', 'Youtube'].map((social, i) => (
-              <a key={i} href="#" className="text-[9px] tracking-[0.3em] text-gray-500 hover:text-white uppercase transition-colors">
-                {social}
+            {socials.map((social, i) => ( // 'social' is the individual item
+              <a 
+                key={i} 
+                href={social.url} // Accessing individual item property
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-[9px] tracking-[0.3em] text-gray-500 hover:text-white uppercase transition-colors"
+              >
+                {social.name} {/* Accessing individual item property */}
               </a>
             ))}
           </div>

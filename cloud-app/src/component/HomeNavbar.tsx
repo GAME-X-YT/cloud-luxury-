@@ -180,8 +180,9 @@
   import { useState, useEffect, useRef } from "react";
   import { motion, AnimatePresence } from "framer-motion";
   import { Link, useLocation } from "react-router-dom";
-  import { Home, ShoppingBag, LogIn, Tag, BookOpen, User, Menu, X, Search } from "lucide-react";
+  import { Home, ShoppingCart, LogIn, Tag, BookOpen, User, Menu, X, Search } from "lucide-react";
   import SearchBar from "./SearchBar";
+  import { useCart } from "../context/CartContext";
 
   const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -190,6 +191,10 @@
     const [showSearch, setShowSearch] = useState(false);
     const location = useLocation(); // To track active page
     const navRef = useRef<HTMLDivElement>(null);
+
+    const { cartCount } = useCart();;
+
+    // const cartItemCount = cart ? cart.reduce((total: number, item: any) => total + item.quantity, 0) : 0;
 
     // Hide nav on scroll down, show on scroll up
     useEffect(() => {
@@ -240,7 +245,7 @@ useEffect(() => {
 
     const navLinks = [
       { name: "Home", path: "/", icon: <Home size={18} /> },
-      { name: "Shop", path: "/shop", icon: <ShoppingBag size={18} /> },
+      { name: "Cart", path: "/cart", icon: <ShoppingCart size={18} />, isCart: true },
       { name: "Wardrobe", path: "/wardrobe", icon: <Tag size={18} /> },
       { name: "Blog", path: "/blog", icon: <BookOpen size={18} /> },
       { name: "Sign In", path: "/signup", icon: <LogIn size={18} /> },
@@ -279,26 +284,33 @@ useEffect(() => {
             <ul className="hidden lg:flex items-center space-x-2">
               {navLinks.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.path}
+                  <a
+                    href={link.path}
+                    target="_blank"           /* Opens in new tab */
+                    rel="noopener noreferrer"         /* Security best practice */
                     className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all duration-300
                       ${location.pathname === link.path 
                         ? "text-purple-700 bg-white/60 shadow-sm" 
                         : "text-gray-700 hover:text-purple-600 hover:bg-white/30"}`}
                   >
+                   <div className="relative">
                     {link.icon}
-                    {link.name}
-                    {location.pathname === link.path && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute inset-0 border-2 border-purple-400/20 rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
+                    {/* CART BADGE */}
+                    {link.isCart && cartCount > 0 && (
+                      <motion.span 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-lg font-black"
+                      >
+                        {cartCount}
+                      </motion.span>
                     )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                  </div>
+                  {link.name}
+                </a>
+              </li>
+            ))}
+          </ul>
 
             {/* Action Area */}
             <div className="flex items-center space-x-2">
@@ -343,15 +355,17 @@ useEffect(() => {
               >
                 <div className="grid grid-cols-2 gap-4 p-6">
                   {navLinks.map((link) => (
-                    <Link
+                    <a
                       key={link.name}
-                      to={link.path}
+                      href={link.path}
+                      target="_blank"           /* Opens in new tab */
+                      rel="noopener noreferrer"         /* Security best practice */
                       onClick={() => setIsOpen(false)}
                       className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white/40 backdrop-blur-md shadow-sm border border-white/50 text-gray-800"
                     >
                       <span className="text-purple-600">{link.icon}</span>
                       <span className="text-xs font-bold uppercase tracking-widest">{link.name}</span>
-                    </Link>
+                    </a>
                   ))}
                 </div>
               </motion.div>

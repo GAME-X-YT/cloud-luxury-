@@ -374,7 +374,7 @@ const products: Product[] = [
         muted
         playsInline
       >
-        <source src={cloudvid} type="video/mp4" />
+        <source src={cloudvid} type="video/mp4"/>
       </video>
 
               {/* HERO SECTION */}
@@ -451,6 +451,7 @@ const products: Product[] = [
           {/* Floating Badge */}
           <motion.div 
             animate={{ y: [0, -10, 0] }}
+
             transition={{ duration: 4, repeat: Infinity }}
             className="absolute -top-4 -right-4 bg-yellow-500 text-black w-20 h-20 rounded-full flex items-center justify-center text-[10px] font-bold uppercase text-center p-2 shadow-xl border-2 border-black"
           >
