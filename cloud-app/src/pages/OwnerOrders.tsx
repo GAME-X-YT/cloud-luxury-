@@ -224,6 +224,10 @@
 // export default OwnerOrders;
 
 
+
+
+
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -231,6 +235,7 @@ import { Package, Clock, CheckCircle, Truck, MessageCircle, Hash } from 'lucide-
 
 const OwnerOrders = () => {
   const [orders, setOrders] = useState<any[]>([]);
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   const fetchAllOrders = () => {
     axios.get("http://localhost:5000/api/orders/all")
@@ -250,6 +255,33 @@ const OwnerOrders = () => {
       console.error("Update failed", err);
     }
   };
+
+  // Inside your Admin Orders Component
+const confirmAndNotify = async (orderId: string) => {
+  setProcessingId(orderId);
+  try {
+    const token = localStorage.getItem('token');
+    
+    // Call the route we just fixed
+    const res = await axios.put(
+      `http://localhost:5000/api/orders/confirm/${orderId}`, 
+      {}, 
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    if (res.status === 200) {
+     setTimeout(() => {
+        fetchAllOrders();
+        setProcessingId(null);
+        toast.success("Success! Order confirmed and Luxury Email sent to customer.");
+      }, 500);
+    }
+  } catch (err) {
+    console.error("Failed to confirm order", err);
+    toast.error("Error confirming order. Check backend console.");
+    setProcessingId(null);
+  }
+};
 
   return (
     <div className="p-4 md:p-10 bg-[#0A0A0A] min-h-screen text-white font-sans">
@@ -353,17 +385,32 @@ const OwnerOrders = () => {
                   {/* Action Buttons */}
                   <div className="mt-8 flex flex-wrap gap-3">
                     <button 
-                      onClick={() => changeStatus(order._id, 'Processing')} 
+                      onClick={() => changeStatus(order._id, 'processing')} 
                       className="flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full text-xs font-bold hover:bg-yellow-500 transition-colors"
                     >
                       <Package size={14} /> Process
                     </button>
+
                     <button 
-                      onClick={() => changeStatus(order._id, 'Delivered')} 
-                      className="flex items-center gap-2 px-6 py-3 bg-neutral-800 text-white rounded-full text-xs font-bold hover:bg-green-600 transition-colors"
-                    >
-                      <CheckCircle size={14} /> Complete
-                    </button>
+                        onClick={() => confirmAndNotify(order._id)} 
+                        disabled={processingId === order._id}
+                        className={`flex items-center gap-2 px-6 py-3 rounded-full text-xs font-bold transition-all duration-500 ${
+                          processingId === order._id 
+                          ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed' 
+                          : 'bg-white text-black hover:bg-yellow-500 shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                        }`}
+                      >
+                        {processingId === order._id ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle size={14} /> Confirmed & Notify
+                          </>
+                        )}
+                      </button>
                     
                     {/* WhatsApp link using the dynamic phone number from the order */}
                     <a 

@@ -117,135 +117,170 @@
 // export default SearchBar;
 
 
-    import { useState, useEffect } from "react";
-    import { motion, AnimatePresence } from "framer-motion";
-    import { Search, X } from "lucide-react";
-    import { useNavigate } from "react-router-dom";
 
-    interface SearchBarProps {
-    showSearch: boolean;
-    setShowSearch: (value: boolean) => void;
-    }
 
-    interface SearchItem {
-    name: string;
-    path: string;
-    }
 
-    const searchData: SearchItem[] = [
-    { name: "Home", path: "/" },
-    { name: "Shoes", path: "/shoes" },
-    { name: "Wardrobe", path: "/wardrobe" },
-    { name: "Blog", path: "/blog" },
-    { name: "Sign In", path: "/signin" },
-    { name: "Cloud Hoodie", path: "/product/hoodie-001" },
-    { name: "Luxury Necklace", path: "/product/necklace" },
-    { name: "Luxury shoes", path: "/product/shoes" },
-    { name: "Luxury T-Shirt", path: "/product/tshirt-004" },
-    { name: "Couple Outfit", path: "/product/couple-outfit" },
-    { name: "Streetwear Collection", path: "/wardrobe/streetwear" },
-    { name: "Summer Collection", path: "/wardrobe/summer" },
-    { name: "Luxury Collection", path: "/wardrobe/luxury" }
-    ];
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X } from "lucide-react";
+import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
-    function SearchBar({ showSearch, setShowSearch }: SearchBarProps) {
+interface SearchBarProps {
+showSearch: boolean;
+setShowSearch: (value: boolean) => void;
+}
+
+interface SearchItem {
+name: string;
+path: string;
+category: string;
+}
+
+// const searchData: SearchItem[] = [
+// { name: "Home", path: "/" },
+// { name: "Shoes", path: "/shoes" },
+// { name: "Wardrobe", path: "/wardrobe" },
+// { name: "Blog", path: "/blog" },
+// { name: "Sign In", path: "/signin" },
+// { name: "Hoodie", path: "/hoodie" },
+// { name: "Luxury Necklace", path: "/product/necklace" },
+// { name: "shoes", path: "/shoes" },
+// { name: "T-Shirt", path: "/tshirt" },
+// { name: "Couple Outfit", path: "/couples-outfit" },
+// { name: "Streetwear", path: "/wardrobe" },
+// { name: "Collection", path: "/wardrobe" },
+// { name: "Luxury Collection", path: "/wardrobe" }
+// ];
+
+function SearchBar({ showSearch, setShowSearch }: SearchBarProps) {
     const [query, setQuery] = useState("");
     const [filtered, setFiltered] = useState<SearchItem[]>([]);
     const [focused, setFocused] = useState(false);
+    const [isSearching, setIsSearching] = useState(false);
     const navigate = useNavigate();
 
-    // EFFECT: Clear search results when the search bar is toggled closed
+    // The categories you want to auto-redirect to
+    const smartCategories = ['shoes', 'watches', 'jewelry', 'tshirt', 'hoodie'];
+
+    // DEBOUNCE EFFECT: This watches "query" and only searches after 400ms of silence
     useEffect(() => {
-        if (!showSearch) {
-        setQuery("");
-        setFiltered([]);
-        }
-    }, [showSearch]);
+        const delayDebounceFn = setTimeout(() => {
+            if (query.trim() !== "") {
+                performSearch(query);
+            } else {
+                setFiltered([]);
+            }
+        }, 400); // 400ms is the "Sweet Spot" for luxury apps
 
+        return () => clearTimeout(delayDebounceFn);
+    }, [query]);
+
+    // This function now handles the actual API call
+    const performSearch = async (searchTerm: string) => {
+        setIsSearching(true);
+        try {
+            const response = await axios.get(`http://localhost:5000/api/products/search?q=${searchTerm}`);
+            const results = response.data.map((product: any) => ({
+                name: product.name,
+                path: `/wardrobe/${product._id}`,
+                category: product.category
+            }));
+            setFiltered(results);
+        } catch (err) {
+            console.error("Search fetch failed", err);
+        } finally {
+            setIsSearching(false);
+        }
+    };
+
+    // Updated handleSearch only updates the input text
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setQuery(value);
-
-        if (value.trim() === "") {
-        setFiltered([]);
-        return;
-        }
-
-        const results = searchData.filter(item =>
-        item.name.toLowerCase().includes(value.toLowerCase())
-        );
-        setFiltered(results);
+        setQuery(e.target.value);
     };
 
     return (
         <div className="relative flex items-center">
-        {/* Search Input Container */}
-        <div className="relative flex items-center">
-            <AnimatePresence>
-            {showSearch && (
-                <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 280, opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                className="relative flex items-center overflow-visible"
-                >
-                <Search className="absolute left-3 text-gray-400" size={18} />
-                <input
-                    type="text"
-                    value={query}
-                    onChange={handleSearch}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setTimeout(() => setFocused(false), 200)}
-                    placeholder="Search Cloud Luxury..."
-                    autoFocus
-                    className="w-full pl-10 pr-10 py-2 rounded-full border border-purple-200 bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all shadow-inner text-gray-800"
-                />
-                
-                {/* Clear Button */}
-                {query && (
-                    <button 
-                    onClick={() => { setQuery(""); setFiltered([]); }}
-                    className="absolute right-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                    <X size={14} className="text-gray-400" />
-                    </button>
-                )}
-                </motion.div>
-            )}
-            </AnimatePresence>
+            <div className="relative flex items-center">
+                <AnimatePresence>
+                    {showSearch && (
+                        <motion.div
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 280, opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            className="relative flex items-center overflow-visible"
+                        >
+                            <Search className="absolute left-3 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={handleSearch} // Just updates the text
+                                onFocus={() => setFocused(true)}
+                                onBlur={() => setTimeout(() => setFocused(false), 200)}
+                                placeholder="Search Cloud Luxury..."
+                                autoFocus
+                                className="w-full pl-10 pr-10 py-2 rounded-full border border-purple-200 bg-white/80 backdrop-blur-sm text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all shadow-inner text-gray-800"
+                            />
+                            {query && (
+                                <button 
+                                    onClick={() => { setQuery(""); setFiltered([]); }}
+                                    className="absolute right-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                >
+                                    <X size={14} className="text-gray-400" />
+                                </button>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-            {/* Suggestions Dropdown */}
-            {/* IMPORTANT: This is absolute so it pops out of the Navbar flow */}
-            <AnimatePresence>
-            {focused && filtered.length > 0 && (
-                <motion.ul
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute top-full left-0 mt-3 w-full bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-[999] overflow-hidden py-2"
-                >
-                <p className="px-4 py-1 text-[10px] uppercase tracking-widest text-gray-400 font-bold">Suggestions</p>
-                {filtered.map((item, index) => (
-                    <li
-                    key={index}
-                    onMouseDown={() => {
-                        navigate(item.path);
-                        setShowSearch(false); // Close the whole bar after selection
-                    }}
-                    className="px-4 py-3 cursor-pointer hover:bg-purple-50 flex items-center justify-between group transition-colors"
-                    >
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">
-                        {item.name}
-                    </span>
-                    <Search size={14} className="text-gray-300 group-hover:text-purple-400" />
-                    </li>
-                ))}
-                </motion.ul>
-            )}
-            </AnimatePresence>
-        </div>
+                <AnimatePresence>
+                    {focused && (query.length > 1) && (
+                        <motion.ul
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="absolute top-full left-0 mt-3 w-full bg-white/95 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-999 overflow-hidden py-2"
+                        >
+                            {isSearching ? (
+                                <li className="px-4 py-3 text-xs text-gray-400 italic flex items-center gap-2">
+                                    <div className="w-3 h-3 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                                    Searching...
+                                </li>
+                            ) : filtered.length > 0 ? (
+                                <>
+                                    <p className="px-4 py-1 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Matches Found</p>
+                                    {filtered.map((item, index) => (
+                                        <li
+                                            key={index}
+                                            onMouseDown={() => {
+                                                const searchTerm = query.toLowerCase().trim();
+                                                // SMART REDIRECT LOGIC
+                                                if (smartCategories.includes(searchTerm)) {
+                                                    navigate(`/jewelry/${searchTerm}`);
+                                                } else {
+                                                    navigate(item.path);
+                                                }
+                                                setShowSearch(false);
+                                            }}
+                                            className="px-4 py-3 cursor-pointer hover:bg-purple-50 flex items-center justify-between group transition-colors"
+                                        >
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">{item.name}</span>
+                                                <span className="text-[10px] text-purple-400 uppercase tracking-widest">{item.category}</span>
+                                            </div>
+                                            <Search size={14} className="text-gray-300 group-hover:text-purple-400" />
+                                        </li>
+                                    ))}
+                                </>
+                            ) : (
+                                <li className="px-4 py-6 text-center text-gray-400 text-sm">Not found. check the wardrobe </li>
+                            )}
+                        </motion.ul>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     );
-    }
+}
 
-    export default SearchBar;
+export default SearchBar;

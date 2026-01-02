@@ -21,7 +21,6 @@ app.use('/api/products', productRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use("/api/users", userRoutes);
 app.use('/api/orders', orderRoutes);
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use('/api/chat', chatRoutes);
 app.use('/api/help', helpRoutes);
 

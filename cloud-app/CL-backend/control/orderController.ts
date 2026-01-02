@@ -124,7 +124,7 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
 import Product from '../models/Product';
-
+import { sendEmail } from "../middleware/sendEmail";
 
 export const createOrder = async (req: any, res: Response) => {
   try {
@@ -253,3 +253,79 @@ export const cancelOrder = async (req: any, res: Response) => {
     res.status(500).json({ message: "Cancellation failed" });
   }
 };
+
+
+export const confirmOrder = async (req: Request, res: Response) => {
+    try {
+        const { orderId } = req.params;
+
+        // 1. Find the order and pull the user data (email and name)
+        const order = await Order.findById(orderId).populate("user");
+        
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // 2. Update the status using your Schema field names
+        // We use 'orderStatus' and 'paymentStatus' based on your previous logs
+        order.orderStatus = 'Processing'; 
+        order.paymentStatus = 'Paid';
+        await order.save();
+
+        // 3. Send the Email
+        const user = order.user as any; // Cast to any to avoid TS errors with populated fields
+        
+        if (user && user.email) {
+            // We convert order._id to a string so it can be sliced in the template
+            const orderIdString = order._id.toString();
+            
+            await sendEmail(
+                user.email,
+                "Cloud Luxury | Order Authenticated",
+                orderConfirmationTemplate(user.name, orderIdString, order.totalAmount)
+            );
+        }
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Order confirmed and cloud luxury notification sent.",
+            order 
+        });
+
+    } catch (err: any) {
+        console.error("Backend Error:", err);
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
+    }
+};
+
+// Simple Luxury Template helper
+const orderConfirmationTemplate = (userName: string, orderId: string, total: number) => `
+    <div style="background-color: #050505; color: #ffffff; font-family: 'Georgia', serif; padding: 50px 20px; text-align: center;">
+    <div style="max-width: 600px; margin: 0 auto; border: 1px solid #c5a059; padding: 40px; background-color: #0a0a0a;">
+        <h1 style="color: #c5a059; letter-spacing: 5px; text-transform: uppercase; font-size: 24px;">Cloud Luxury</h1>
+        <div style="height: 1px; background: linear-gradient(to right, transparent, #c5a059, transparent); margin: 20px 0;"></div>
+        
+        <h2 style="font-weight: normal; font-size: 20px; margin-bottom: 30px;">Order Authenticated</h2>
+        
+        <p style="color: #a3a3a3; line-height: 1.8; text-align: left;">
+            Dear ${userName},<br><br>
+            We are pleased to inform you that your order <strong>#${orderId.slice(-6).toUpperCase()}</strong> has been formally confirmed by our curators. 
+            Your selection is now being prepared for specialized transit.
+        </p>
+
+        <div style="background-color: #111; border: 1px solid #222; padding: 20px; margin: 30px 0; text-align: left;">
+            <p style="margin: 0; font-size: 12px; color: #c5a059; text-transform: uppercase; letter-spacing: 2px;">Transaction Details</p>
+            <p style="margin: 10px 0 0 0; color: #ffffff; font-size: 15px;">
+                Total Value: $${total.toLocaleString()}<br>
+                Status: Handled with Care
+            </p>
+        </div>
+
+        <p style="color: #777; font-size: 13px; font-style: italic; margin-bottom: 40px;">
+            Expect a secondary notification once your parcel enters private transit.
+        </p>
+
+        <a href="http://localhost:5000/orders" style="background-color: #c5a059; color: #000; padding: 15px 30px; text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">View Collection Status</a>
+    </div>
+</div>
+`;

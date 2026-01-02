@@ -170,8 +170,9 @@
   import PrivacyPolicy from './pages/Privacy';
   import Terms from './pages/Terms';
   import HelpCenter from './pages/Help';
-  import About from './pages/About';
+  import Info from './pages/info';
   import Contact from './pages/Contact';
+  import About from './pages/About';
 
 
   // Components
@@ -257,8 +258,9 @@
               
               {/* Information pages (Optional: Keep public or lock them) */}
               <Route path="/vault" element={<ManifestoPage />} />
-              <Route path="/info" element={<About />} />
+              <Route path="/info" element={<Info />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/about" element={<About />} />
 
               {/*
                    PROTECTED ROUTES

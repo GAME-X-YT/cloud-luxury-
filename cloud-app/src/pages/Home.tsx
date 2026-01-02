@@ -661,7 +661,7 @@ const products: Product[] = [
                   {/* <p className="text-gray-200 mb-3">{product.price}</p> */}
 
                   <button className="bg-white text-black px-4 py-2 rounded-full">
-                    learn-more
+                    View collections
                   </button>
 
                 </div>

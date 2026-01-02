@@ -900,25 +900,56 @@
                 <AdminOrderList />
               </motion.div>
             ) : (
-              <motion.div key="management" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <motion.div key="management" 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }} 
+              className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 {/* UPLOADER FORM */}
                 <section className="bg-neutral-900/50 border border-white/10 p-8 rounded-[2.5rem] backdrop-blur-xl">
                   {mode === 'blog' ? (
-                    <form onSubmit={handleBlogSubmit} className="space-y-6">
-                      <input type="text" placeholder="Article Title" required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.title} onChange={(e) => setBlogData({...blogData, title: e.target.value})} />
-                      <input type="text" placeholder="Short Excerpt" required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.excerpt} onChange={(e) => setBlogData({...blogData, excerpt: e.target.value})} />
-                      <textarea placeholder="Story..." rows={6} required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.content} onChange={(e) => setBlogData({...blogData, content: e.target.value})} />
+                    <form 
+                    onSubmit={handleBlogSubmit} 
+                    className="space-y-6">
+                      <input type="text" 
+                      placeholder="Article Title" 
+                      required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.title} 
+                      onChange={(e) => setBlogData({...blogData, title: e.target.value})} />
+
+                      <input type="text" 
+                      placeholder="Short Excerpt" 
+                      required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.excerpt} 
+                      onChange={(e) => setBlogData({...blogData, excerpt: e.target.value})} />
+
+                      <textarea 
+                      placeholder="Story..." 
+                      rows={6} 
+                      required className="w-full bg-black/40 border border-white/10 rounded-xl p-3 outline-none" value={blogData.content} 
+                      onChange={(e) => setBlogData({...blogData, content: e.target.value})} />
                       <div className="relative border-2 border-dashed border-white/10 rounded-2xl p-8 text-center bg-black/20">
-                        <input type="file" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+                        <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                        onChange={(e) => setFile(e.target.files?.[0] || null)} />
+
                         <Upload className="mx-auto mb-2 text-neutral-500" />
-                        <p className="text-sm text-neutral-400">{file ? file.name : "Upload Journal Cover"}</p>
+                        <p className="text-sm text-neutral-400">
+                          {file ? file.name : "Upload Journal Cover"}
+                          </p>
                       </div>
-                      <button type="submit" disabled={isUploading} className="w-full bg-yellow-500 py-4 rounded-2xl text-black font-black uppercase tracking-widest">
+
+                      <button type="submit" 
+                      disabled={isUploading} 
+                      className="w-full bg-yellow-500 py-4 rounded-2xl text-black font-black uppercase tracking-widest">
                         {isUploading ? <Loader2 className="animate-spin mx-auto" /> : "Publish to Journal"}
                       </button>
                     </form>
                   ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form 
+                    onSubmit={handleSubmit} 
+                    className="space-y-6">
+                      
                       <select value={formData.category} onChange={(e) => setFormData({...formData, category: e.target.value})} className="w-full bg-black border border-white/10 rounded-xl p-3 outline-none uppercase">
                         {catalogs.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                       </select>

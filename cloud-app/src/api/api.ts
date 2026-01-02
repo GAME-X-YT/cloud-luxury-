@@ -35,10 +35,17 @@ export const getProfile = ( token: string) =>
     headers: { Authorization: `Bearer ${token}` },
   });
 
-export const uploadProfilePic = (fileData: FormData, token: string) =>
-  API.post("/upload-profile", fileData, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const resendOTP = (data: { email: string, reason?: string }) => 
+  API.post("/resend-otp", data);
+
+export const uploadProfilePic = async (formData: FormData, token: string) => {
+    return await axios.post("http://localhost:5000/api/users/upload-profile-pic", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+};
 
 // --- Account Deletion Flow (Optional, but good to add now) ---
 

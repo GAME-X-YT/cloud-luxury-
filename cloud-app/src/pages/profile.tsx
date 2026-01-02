@@ -1,203 +1,4 @@
 
-
-
-// import { useEffect, useState, useRef } from "react";
-// import { getProfile, uploadProfilePic } from "../api/api";
-// import { useNavigate } from "react-router-dom";
-// import { LogOut, Home, ShoppingCart, Heart, Settings, Trash2, Camera, Loader2 } from 'lucide-react';
-
-// interface User {
-//     _id: string;
-//     name: string;
-//     email: string;
-//     profilePic?: string;
-// }
-
-// const dummyOrderHistory = [
-//     { id: '1001', date: '2025-12-01', total: '$89.99', status: 'Delivered' },
-//     { id: '1002', date: '2025-11-15', total: '$45.00', status: 'Shipped' },
-// ];
-
-// export default function Profile() {
-//     const [user, setUser] = useState<User | null>(null);
-//     const [activeTab, setActiveTab] = useState('orders');
-//     const [profileLoading, setProfileLoading] = useState(true);
-//     const [uploading, setUploading] = useState(false);
-//     const fileInputRef = useRef<HTMLInputElement>(null);
-//     const navigate = useNavigate();
-
-//     const token = localStorage.getItem("token");
-
-//     useEffect(() => {
-//         // Ensure the profile stays open and authenticated across refreshes/new tabs
-//         if (!token) {
-//             navigate("/login");
-//             return;
-//         }
-
-//         const fetchUser = async () => {
-//             try {
-//                 const res = await getProfile(token);
-//                 setUser(res.data);
-//             } catch (err) {
-//                 console.error("Fetch profile error:", err);
-//                 handleLogout();
-//             } finally {
-//                 setProfileLoading(false);
-//             }
-//         };
-
-//         fetchUser();
-//     }, [token, navigate]);
-
-//     const handleLogout = () => {
-//         localStorage.clear(); // Clears token, user, and userId
-//         navigate("/login");
-//     };
-
-//     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-//         const file = e.target.files?.[0];
-//         if (!file || !token) return;
-
-//         const formData = new FormData();
-//         formData.append("image", file);
-
-//         setUploading(true);
-//         try {
-//             const res = await uploadProfilePic(formData, token);
-//             setUser(prev => prev ? { ...prev, profilePic: res.data.profilePic } : null);
-//             alert("Profile picture updated!");
-//         } catch (err) {
-//             alert("Failed to upload image.");
-//         } finally {
-//             setUploading(false);
-//         }
-//     };
-
-//     const ProfileLink = ({ icon: Icon, text, onClick, active, isDanger = false }: any) => (
-//         <button
-//             onClick={onClick}
-//             className={`w-full flex items-center p-3 rounded-xl text-left transition-all duration-200 
-//                 ${active ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 hover:bg-indigo-50 dark:hover:bg-gray-700'}
-//                 ${isDanger ? 'text-red-600 hover:bg-red-50' : ''}
-//             `}
-//         >
-//             <Icon className={`w-5 h-5 mr-3 ${active ? 'text-white' : ''}`} />
-//             <span className="font-medium">{text}</span>
-//         </button>
-//     );
-
-//     if (profileLoading) {
-//         return (
-//             <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
-//                 <Loader2 className="w-10 h-10 text-indigo-600 animate-spin mb-4" />
-//                 <p className="text-gray-500 font-medium">Loading your profile...</p>
-//             </div>
-//         );
-//     }
-
-//     if (!user) return null;
-
-//     return (
-//         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-8">
-//             <div className="max-w-6xl mx-auto flex flex-col md:flex-row bg-white dark:bg-gray-800 shadow-xl rounded-4xl overflow-hidden border border-gray-100 dark:border-gray-700">
-                
-//                 {/* --- Left Sidebar --- */}
-//                 <div className="w-full md:w-80 bg-gray-50 dark:bg-gray-800/50 border-r border-gray-200 dark:border-gray-700 p-8">
-//                     <div className="flex flex-col items-center text-center mb-8">
-//                         <div className="relative group">
-//                             {user.profilePic ? (
-//                                 <img
-//                                     src={`http://localhost:5000/uploads/${user.profilePic}`}
-//                                     alt="Profile"
-//                                     className="w-32 h-32 rounded-full object-cover ring-4 ring-white shadow-xl"
-//                                 />
-//                             ) : (
-//                                 <div className="w-32 h-32 rounded-full bg-indigo-600 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
-//                                     {user.name[0]}
-//                                 </div>
-//                             )}
-//                             <button 
-//                                 onClick={() => fileInputRef.current?.click()}
-//                                 className="absolute bottom-1 right-1 bg-white p-2 rounded-full shadow-lg border border-gray-200 hover:scale-110 transition-transform"
-//                                 disabled={uploading}
-//                             >
-//                                 {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4 text-gray-700" />}
-//                             </button>
-//                             <input type="file" ref={fileInputRef} className="hidden" onChange={handleImageUpload} accept="image/*" />
-//                         </div>
-//                         <h3 className="text-2xl font-bold mt-4 text-gray-900 dark:text-white">{user.name}</h3>
-//                         <p className="text-sm text-gray-500">{user.email}</p>
-//                     </div>
-
-//                     <nav className="space-y-2">
-//                         <ProfileLink icon={Home} text="Marketplace" onClick={() => navigate("/")} />
-//                         <ProfileLink icon={ShoppingCart} text="My Orders" active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} />
-//                         <ProfileLink icon={Heart} text="Wishlist" active={activeTab === 'wishlist'} onClick={() => setActiveTab('wishlist')} />
-//                         <ProfileLink icon={Settings} text="Settings" active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} />
-//                         <div className="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-//                             <ProfileLink icon={LogOut} text="Sign Out" onClick={handleLogout} />
-//                             <ProfileLink icon={Trash2} text="Delete Account" onClick={() => alert("Verification required to delete.")} isDanger />
-//                         </div>
-//                     </nav>
-//                 </div>
-
-//                 {/* --- Right Content Area --- */}
-//                 <div className="flex-1 p-8 lg:p-12">
-//                     <header className="mb-8">
-//                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white capitalize">
-//                             {activeTab.replace('-', ' ')}
-//                         </h1>
-//                         <p className="text-gray-500">Manage your activity and account preferences.</p>
-//                     </header>
-                    
-//                     <div className="bg-gray-50 dark:bg-gray-900/40 rounded-3xl p-6 border border-gray-100 dark:border-gray-700 min-h-[400px]">
-//                         {activeTab === 'orders' && (
-//                             <div className="space-y-4">
-//                                 {dummyOrderHistory.map((order) => (
-//                                     <div key={order.id} className="flex justify-between items-center p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-//                                         <div>
-//                                             <p className="font-bold text-gray-900 dark:text-white">Order #{order.id}</p>
-//                                             <p className="text-sm text-gray-500">{order.date} • <span className="text-green-600 font-medium">{order.status}</span></p>
-//                                         </div>
-//                                         <p className="text-xl font-black text-indigo-600">{order.total}</p>
-//                                     </div>
-//                                 ))}
-//                             </div>
-//                         )}
-
-//                         {activeTab === 'settings' && (
-//                             <div className="max-w-md space-y-6">
-//                                 <div className="space-y-2">
-//                                     <label className="text-sm font-semibold text-gray-500">Full Name</label>
-//                                     <p className="p-3 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 text-gray-900 dark:text-white">{user.name}</p>
-//                                 </div>
-//                                 <div className="space-y-2">
-//                                     <label className="text-sm font-semibold text-gray-500">Email Address</label>
-//                                     <p className="p-3 bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 text-gray-900 dark:text-white">{user.email}</p>
-//                                 </div>
-//                                 <button className="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200">
-//                                     Update Profile
-//                                 </button>
-//                             </div>
-//                         )}
-
-//                         {activeTab === 'wishlist' && (
-//                             <div className="flex flex-col items-center justify-center h-64 text-center">
-//                                 <Heart className="w-12 h-12 text-gray-300 mb-2" />
-//                                 <p className="text-gray-500">Your wishlist is currently empty.</p>
-//                             </div>
-//                         )}
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
-
-
-
-
 import { useEffect, useState, useRef } from "react";
 import { getProfile, uploadProfilePic } from "../api/api";
 import { useNavigate } from "react-router-dom";
@@ -213,6 +14,7 @@ interface User {
 
 export default function Profile() {
     const [user, setUser] = useState<User | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState('orders');
     const [profileLoading, setProfileLoading] = useState(true);
     const [orders, setOrders] = useState([]);
@@ -257,26 +59,43 @@ export default function Profile() {
 
     // FIXED: Restored this function so the "Cannot find name" error goes away
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !token) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-        const formData = new FormData();
-        formData.append("image", file);
+    // VALIDATION: Prevent huge files (e.g., limit to 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert("Image too large. Please choose an image under 2MB.");
+        return;
+    }
 
-        setUploading(true);
-        try {
-            const res = await uploadProfilePic(formData, token);
-            // Assuming your backend returns the new filename in res.data.profilePic
-            setUser(prev => prev ? { ...prev, profilePic: res.data.profilePic } : null);
-            alert("Profile picture updated!");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to upload image.");
-        } finally {
-            setUploading(false);
-        }
-    };
+    // INSTANT PREVIEW (Luxury touch: UI updates before the server even finishes)
+    const reader = new FileReader();
+    reader.onloadend = () => setPreviewUrl(reader.result as string);
+    reader.readAsDataURL(file);
 
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setUploading(true);
+    try {
+        const res = await uploadProfilePic(formData, token!);
+        
+        // Sync with Backend
+        setUser(prev => prev ? { ...prev, profilePic: res.data.profilePic } : null);
+        
+        // Optional: Update localStorage if you store user data there
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        storedUser.profilePic = res.data.profilePic;
+        localStorage.setItem("user", JSON.stringify(storedUser));
+
+    } catch (err) {
+        console.error(err);
+        setPreviewUrl(null); // Revert preview on failure
+        alert("Failed to save to the cloud.");
+    } finally {
+        setUploading(false);
+    }
+};
     if (profileLoading) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-[#050505]">
@@ -296,11 +115,11 @@ export default function Profile() {
                 <div className="w-full md:w-80 bg-white/5 border-r border-white/10 p-8">
                     <div className="flex flex-col items-center text-center mb-8">
                         <div className="relative group">
-                            {user.profilePic ? (
+                            {previewUrl || user.profilePic ? (
                                 <img
-                                    src={`http://localhost:5000/uploads/${user.profilePic}`}
+                                    src={previewUrl || `http://localhost:5000/uploads/${user.profilePic}`}
                                     alt="Profile"
-                                    className="w-32 h-32 rounded-full object-cover ring-2 ring-yellow-500/50 shadow-2xl"
+                                    className={`w-32 h-32 rounded-full object-cover ring-2 ring-yellow-500/50 shadow-2xl transition-opacity ${uploading ? 'opacity-50' : 'opacity-100'}`}
                                 />
                             ) : (
                                 <div className="w-32 h-32 rounded-full bg-yellow-500 flex items-center justify-center text-black text-4xl font-serif italic shadow-xl">

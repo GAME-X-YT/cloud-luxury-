@@ -350,6 +350,31 @@ export const resetPassword = async (req: Request, res: Response) => {
     }
 };
 
+// Add this to your controller file
+export const resendOTP = async (req: Request, res: Response) => {
+    try {
+        const { email, reason } = req.body; // reason could be 'login', 'signup', or 'reset'
+
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" });
+        }
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const subject = reason === 'reset' ? "Your Password Reset Code" : "Your New Verification Code";
+        
+        await generateAndSendOTP(email, subject);
+
+        res.status(200).json({ message: "A new code has been sent to your email." });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error resending code" });
+    }
+};
+
 // Get Profile
 export const getProfileController = async (req: AuthRequest, res: Response) => {
   try {
@@ -370,6 +395,33 @@ export const getProfileController = async (req: AuthRequest, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error fetching profile" });
+  }
+};
+
+export const uploadProfilePicController = async (req: any, res: any) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    // req.user.id comes from your authMiddleware
+    const user = await User.findById(req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Save the filename (multer provides this)
+    user.profilePic = req.file.filename; 
+    await user.save();
+
+    res.status(200).json({ 
+      message: "Profile picture updated successfully", 
+      profilePic: req.file.filename 
+    });
+  } catch (error) {
+    console.error("Upload Controller Error:", error);
+    res.status(500).json({ message: "Error updating profile picture" });
   }
 };
 
@@ -572,6 +624,4 @@ try {
         res.status(500).json({ message: "Server error during deletion confirmation." });
     }
 };
-
-
 

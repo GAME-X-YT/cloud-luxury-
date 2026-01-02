@@ -79,16 +79,19 @@ import {
   getMyOrders, 
   cancelOrder, 
   updatePaymentStatus, 
+  confirmOrder,
   getAllOrdersAdmin,
   updateOrderStatus // <--- Import your new function
 } from '../control/orderController';
 import { authMiddleware } from '../middleware/authMiddleware';
+import { isAdmin } from '../middleware/authAdmin';
 
 const router = express.Router();
 
 router.post('/', authMiddleware, createOrder);           // POST /api/orders
 router.get('/my-orders', authMiddleware, getMyOrders);     // GET /api/orders/myorders
 router.patch('/:id/cancel', authMiddleware, cancelOrder); // PATCH /api/orders/123/cancel
+router.put('/confirm/:orderId', authMiddleware, isAdmin, confirmOrder);
 router.get('/admin/all', authMiddleware, getAllOrdersAdmin);
 router.patch('/admin/:id/payment', authMiddleware, updatePaymentStatus);
 router.patch('/status/:id', authMiddleware, updateOrderStatus);

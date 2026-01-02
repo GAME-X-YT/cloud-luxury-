@@ -176,17 +176,12 @@
 
 
 
-import express, { Request, Response } from 'express';
-
-import multer from 'multer';
-
-import fs from 'fs';
-
-import path from 'path';
-
-import Product from '../models/Product';
-
-import { isAdmin } from '../middleware/authAdmin';
+  import express, { Request, Response } from 'express';
+  import multer from 'multer';
+  import fs from 'fs';
+  import path from 'path';
+  import Product from '../models/Product';
+  import { isAdmin } from '../middleware/authAdmin';
 
 
 
@@ -439,6 +434,27 @@ router.delete('/:id', isAdmin, async (req: Request, res: Response) => {
 
 });
 
+// Inside your product routes file (e.g., productRoutes.ts)
+router.get("/search", async (req, res) => {
+  try {
+    const query = req.query.q as string;
+    if (!query) return res.status(400).json({ message: "Search query is empty" });
+
+    // This search logic covers all your schema fields
+    const results = await Product.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+        { category: { $regex: query, $options: "i" } },
+        { subCategory: { $regex: query, $options: "i" } },
+      ],
+    }).limit(20);
+
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ message: "Search error", error });
+  }
+});
 
 
 export default router;

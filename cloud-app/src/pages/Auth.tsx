@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebookF, FaArrowLeft } from 'react-icons/fa';
+import { FaGoogle, FaFacebookF, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
 import cloudimg from '../assets/cloudimg.png'
 
 interface AuthProps {
@@ -26,11 +26,42 @@ export default function UnifiedAuth({ setUser }: AuthProps) {
     const [mode, setMode] = useState<AuthMode>('signin');
     const [isSlid, setIsSlid] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [resendTimer, setResendTimer] = useState(0);
     const [formData, setFormData] = useState({
         name: '', email: '', password: '', otp: '', newPassword: ''
     });
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+    if (resendTimer > 0) {
+        const interval = setInterval(() => setResendTimer(prev => prev - 1), 1000);
+        return () => clearInterval(interval);
+    }
+}, [resendTimer]);
+
+const handleResendCode = async () => {
+    if (resendTimer > 0) return; // Prevent spamming
+    
+    setLoading(true);
+    try {
+        if (mode === 'activate') {
+            // For sign-up activation, we re-run the register logic or a specific resend-activation API
+            await register({ name: formData.name, email: formData.email, password: formData.password });
+        } else if (mode === 'loginOTP') {
+            await loginOTPRequest({ email: formData.email, password: formData.password });
+        } else if (mode === 'reset') {
+            await forgotPasswordRequest({ email: formData.email });
+        }
+        
+        toast.success("A new code has been sent!");
+        setResendTimer(30); // Start 30-second cooldown
+    } catch (err: any) {
+        toast.error("Failed to resend code.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const toggleSlide = (toSignup: boolean) => {
         setIsSlid(toSignup);
@@ -183,6 +214,15 @@ export default function UnifiedAuth({ setUser }: AuthProps) {
                                 <p className="text-xs text-gray-500 mb-4 animate-in fade-in">Enter code sent to {formData.email}</p>
                                 <AuthInput name="otp" placeholder="6-Digit OTP" value={formData.otp} onChange={handleChange} />
                                 <MainButton text={loading ? "Verifying..." : "Activate"} onClick={handleActivate} />
+
+                                <button 
+                                    disabled={resendTimer > 0} 
+                                    onClick={handleResendCode}
+                                    className={`mt-4 text-xs font-bold uppercase tracking-tighter transition-all ${resendTimer > 0 ? 'text-gray-500' : 'text-indigo-500 hover:text-indigo-400'}`}
+                                >
+                                    {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : "Resend New Code"}
+                                </button>
+
                                 <button onClick={() => setMode('signup')} className="text-xs mt-4 text-gray-400 flex items-center gap-1 animate-in fade-in"><FaArrowLeft /> Back</button>
                             </>
                         ) : null}
@@ -209,7 +249,7 @@ export default function UnifiedAuth({ setUser }: AuthProps) {
                                 <p className="text-xs text-gray-500 mb-4 italianno-bold ">A code was sent to {formData.email}</p>
                                 <AuthInput name="otp" placeholder="Enter Login OTP" value={formData.otp} onChange={handleChange} />
                                 <MainButton text={loading ? "Verifying..." : "Confirm Login"} onClick={handleLogin} />
-                                <button onClick={() => setMode('signin')} className="text-xs mt-4 satisfy-regular text-gray-400 flex items-center gap-1">
+                                <button onClick={() => setMode('signin')} className="text-xs mt-4 satisfy-regular text-gray-400 flex satisfy-regular gap-1">
                                     <FaArrowLeft /> Use different account
                                 </button>
                             </>
@@ -236,12 +276,12 @@ export default function UnifiedAuth({ setUser }: AuthProps) {
                     ${isSlid ? '-translate-x-full rounded-tr-[100px] rounded-br-[100px]' : 'rounded-tl-[100px] rounded-bl-[100px]'}`}>
                     <div className={`bg-linear-to-br from-gray-700 via-slate-800 to-neutral-700 text-fuchsia-200 relative -left-full h-full w-[200%] transition-all duration-700 ease-in-out ${isSlid ? 'translate-x-1/2' : 'translate-x-0'}`}>
                         <div className={`absolute w-1/2 h-full flex flex-col items-center justify-center px-10 text-center top-0 transition-all duration-700 ${isSlid ? 'translate-x-0' : '-translate-x-[20%]'}`}>
-                            <h1 className="text-5xl font-bold mb-4 uppercase ole-regular">Already for luxury!</h1>
-                            <p className="text-sm mb-8 tracking-widest">Sign in to continue your journey.</p>
+                            <h1 className="text-5xl font-bold mb-4 uppercase italianno-bold ">Already for luxury!</h1>
+                            <p className="text-sm mb-8 dancing-bold">Sign in to continue your journey.</p>
                             <GhostButton text="Sign In" onClick={() => toggleSlide(false)} />
                         </div>
                         <div className={`absolute w-1/2 h-full flex flex-col items-center justify-center px-10 text-center top-0 right-0 transition-all duration-700 ${isSlid ? 'translate-x-[20%]' : 'translate-x-0'}`}>
-                            <h1 className="text-xl font-bold mb-4 rochester-regular uppercase ">want to start shopping?</h1>
+                            <h1 className="text-xl font-bold mb-4 satisfy-regular uppercase ">want to start shopping?</h1>
                             <p className="text-sm mb-8 cinzel-bold">Register to start your luxury life.</p>
                             <GhostButton text="Sign Up" onClick={() => toggleSlide(true)} />
                         </div>
@@ -252,9 +292,29 @@ export default function UnifiedAuth({ setUser }: AuthProps) {
     );
 }
 
-const AuthInput = ({ ...props }: any) => (
-    <input {...props} className="w-full bg-gray-100 border-none my-2 p-3 text-sm rounded-xl outline-none focus:ring-2 focus:ring-indigo-400 transition-all" />
-);
+const AuthInput = ({ ...props }: any) => {
+    const [show, setShow] = useState(false);
+    const isPassword = props.type === "password";
+
+    return (
+        <div className="relative w-full my-2">
+            <input 
+                {...props} 
+                type={isPassword ? (show ? "text" : "password") : props.type}
+                className="w-full bg-gray-100 border-none p-3 pr-10 text-sm rounded-xl outline-none focus:ring-2 focus:ring-indigo-400 transition-all text-gray-800" 
+            />
+            {isPassword && (
+                <button
+                    type="button"
+                    onClick={() => setShow(!show)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-500 transition-colors"
+                >
+                    {show ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
+                </button>
+            )}
+        </div>
+    );
+};
 const MainButton = ({ text, onClick }: { text: string, onClick: () => void }) => (
     <button onClick={onClick} className="mt-4 bg-indigo-600 text-white text-xs py-3 px-12 rounded-xl font-bold uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all shadow-lg">{text}</button>
 );
