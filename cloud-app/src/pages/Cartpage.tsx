@@ -5,6 +5,13 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { ConfirmModal } from "../component/ConfirmModal";
 import { toast } from 'sonner';
+import { ShoppingBag } from "lucide-react";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { 
+  faArrowLeft,
+   
+} from "@fortawesome/free-solid-svg-icons";
 
 const CartPage = () => {
   const { cart, addToCart, cartCount, clearCart } = useCart();
@@ -39,6 +46,28 @@ const handleConfirmClear = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white pt-32 pb-20 px-6">
+
+       {/* Background Leaves */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ 
+              y: [0, 1000], 
+              x: [0, 100, -100, 0],
+              rotate: [0, 360],
+              opacity: [0, 0.2, 0]
+            }}
+            transition={{ duration: 20 + i * 5, repeat: Infinity, ease: "linear" }}
+            className="absolute text-fuchsia-900"
+            style={{ left: `${i * 15}%`, top: '-5%' }}
+          >
+            <ShoppingBag size={20 + i * 10} strokeWidth={1} />
+          </motion.div>
+        ))}
+      </div>
+
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER WITH CLEAR BAG BUTTON */}
@@ -145,6 +174,12 @@ const handleConfirmClear = () => {
               </Link>
             </div>
           </div>
+          <div className="pt-8 border-t border-white/5">
+            <Link to="/" className="flex items-center text-[11px] text-neutral-500 hover:text-white uppercase tracking-widest transition-colors group">
+              <FontAwesomeIcon icon={faArrowLeft} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+              Main Atelier
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -152,3 +187,4 @@ const handleConfirmClear = () => {
 };
 
 export default CartPage;
+

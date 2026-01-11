@@ -12,6 +12,7 @@ import {
   uploadProfilePicController,
   forgotPasswordRequest, 
   resendOTP,
+  updateProfileController,
   resetPassword   
 } from "../control/userController";
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -48,6 +49,8 @@ router.post(
   upload.single("image"), 
   uploadProfilePicController
 );
+// Add this line to your router file
+router.put("/update-profile", authMiddleware, updateProfileController);
 router.get("/profile", authMiddleware, getProfileController);
 router.post("/resend-otp", resendOTP);
 // Delete user account

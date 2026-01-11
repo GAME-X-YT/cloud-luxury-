@@ -38,8 +38,17 @@ export const getProfile = ( token: string) =>
 export const resendOTP = (data: { email: string, reason?: string }) => 
   API.post("/resend-otp", data);
 
-export const uploadProfilePic = async (formData: FormData, token: string) => {
-    return await axios.post("http://localhost:5000/api/users/upload-profile-pic", formData, {
+// --- Update User Information (Name, etc.) ---
+export const updateProfile = (data: { name: string }, token: string) => 
+  API.put("/update-profile", data, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+// --- Update Profile Picture (Already in your code, but ensure it matches this) ---
+// --- Update Profile Picture ---
+export const uploadProfilePic = (formData: FormData, token: string) => {
+    // Use the 'API' instance instead of 'axios' directly
+    return API.post("/upload-profile-pic", formData, {
         headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,

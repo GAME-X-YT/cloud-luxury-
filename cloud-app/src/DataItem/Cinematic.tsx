@@ -265,11 +265,11 @@ const CinematicFinalSection = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const socials = [
-    { icon: <FaTelegramPlane />, link: "#", color: "hover:text-blue-400" },
+    { icon: <FaTelegramPlane />, link: ": https://telegram.org/dl", color: "hover:text-blue-400" },
     { icon: <FaWhatsapp />, link: "#", color: "hover:text-green-400" },
     { icon: <FaInstagram />, link: "#", color: "hover:text-pink-400" },
     { icon: <FaTiktok />, link: "#", color: "hover:text-white" },
-    { icon: <FaYoutube />, link: "#", color: "hover:text-red-500" },
+    { icon: <FaYoutube />, link: "https://youtube.com/@sama_game?si=ZR05TXethGxICaga ", color: "hover:text-red-500" },
   ];
 
   const socialContainer: Variants = {

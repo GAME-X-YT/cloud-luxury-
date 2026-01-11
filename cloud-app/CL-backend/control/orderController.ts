@@ -279,11 +279,17 @@ export const confirmOrder = async (req: Request, res: Response) => {
             // We convert order._id to a string so it can be sliced in the template
             const orderIdString = order._id.toString();
             
-            await sendEmail(
-                user.email,
-                "Cloud Luxury | Order Authenticated",
-                orderConfirmationTemplate(user.name, orderIdString, order.totalAmount)
-            );
+           try {
+                await sendEmail(
+                    user.email,
+                    "Cloud Luxury | Order Authenticated",
+                    orderConfirmationTemplate(user.name, orderIdString, order.totalAmount)
+                );
+                console.log(`Email sent successfully to ${user.email}`);
+            } catch (emailErr) {
+                // If email fails, we log it but don't stop the launch!
+                console.error("Email failed to send, but order was updated:", emailErr);
+            }
         }
 
         res.status(200).json({ 

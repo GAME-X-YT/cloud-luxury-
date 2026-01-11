@@ -664,6 +664,7 @@
     import axios from 'axios';
     import BlogManager from '../DataItem/BlogManager';
     import { motion, AnimatePresence } from 'framer-motion';
+    import { toast } from 'sonner';
     import { Upload, Loader2, Image as ImageIcon, Edit3, Trash2, ShoppingBag, BookOpen, Package } from 'lucide-react';
 
     interface Product {
@@ -740,7 +741,7 @@
         fetchAllProducts();
         setStatus("Item permanently removed.");
       } catch (err) {
-        alert("Delete failed.");
+        toast.error("Delete failed.");
       }
     };
 
@@ -755,7 +756,7 @@
       e.preventDefault();
       if (!file) return alert("Please upload a cover image");
       if ((formData.category === 'shoes' || formData.category === 'jewelry') && !subCategory) {
-        return alert(`Please select a specific type for ${formData.category}`);
+        return toast(`Please select a specific type for ${formData.category}`);
       }
 
       setIsUploading(true);

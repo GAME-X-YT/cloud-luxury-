@@ -117,6 +117,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ShieldCheck, Landmark, Copy, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 import { useCart } from "../context/CartContext";
+import { toast } from 'sonner';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -171,7 +172,7 @@ const CheckoutPage = () => {
     });
 
     if (response.status === 201 || response.status === 200) {
-        alert("Order Placed! Please ensure you have made the transfer.");
+        toast.success("Order Placed! Please ensure you have made the transfer.");
         clearCart();
         navigate("/profile"); 
     }
@@ -180,7 +181,7 @@ const CheckoutPage = () => {
     
     // This alert will now tell you the ACTUAL server error
     const serverMessage = error.response?.data?.message || "Something went wrong.";
-    alert(`Checkout Error: ${serverMessage}`);
+    toast.error(`Checkout Error: ${serverMessage}`);
   }
 };
 

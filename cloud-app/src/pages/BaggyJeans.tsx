@@ -127,8 +127,13 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, Scissors, Ruler, Maximize, Check, ShoppingBag } from "lucide-react";
+import { 
+  faCartShopping
+} from "@fortawesome/free-solid-svg-icons";
 import { useCart } from "../context/CartContext";
 
 interface Product {
@@ -223,6 +228,27 @@ const BaggyJeansPage = () => {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white selection:bg-yellow-500/30 overflow-x-hidden">
+          {/* Background Leaves */}
+        <div className="fixed inset-0 pointer-events-none z-0">
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ 
+              y: [0, 1000], 
+              x: [0, 100, -100, 0],
+              rotate: [0, 360],
+              opacity: [0, 0.2, 0]
+            }}
+            transition={{ duration: 20 + i * 5, repeat: Infinity, ease: "linear" }}
+            className="absolute text-orange-900"
+            style={{ left: `${i * 15}%`, top: '-5%' }}
+          >
+            <ShoppingBag size={20 + i * 10} strokeWidth={1} />
+          </motion.div>
+        ))}
+      </div>
+      
       <main className="max-w-7xl mx-auto px-6 py-24">
         
         {/* Brutalist Header */}
@@ -269,7 +295,7 @@ const BaggyJeansPage = () => {
         {/* Empty State */}
         {!loading && jeans.length === 0 && (
           <div className="py-40 text-center">
-            <h2 className="text-6xl font-black italic text-neutral-900 border-y border-neutral-900 py-10">OUT OF STOCK // ARCHIVE CLOSED</h2>
+            <h2 className="text-6xl font-black italic text-neutral-900 border-y border-neutral-900 py-10 uppercase">OUT OF STOCK // CHECK in few days</h2>
           </div>
         )}
       </main>
@@ -302,6 +328,13 @@ const BaggyJeansPage = () => {
           color: transparent;
         }
       `}</style>
+
+       <div className="pt-8 border-t border-white/5">
+        <FontAwesomeIcon icon={faCartShopping} className="mr-2 group-hover:-translate-x-1 transition-transform" />
+        <Link to="/cart" className="flex items-center text-[11px] text-neutral-500 hover:text-white uppercase tracking-widest transition-colors group">
+          cart
+        </Link>
+      </div>
     </div>
   );
 };

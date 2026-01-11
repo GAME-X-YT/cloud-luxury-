@@ -83,7 +83,7 @@ const About = () => {
                                 initial={{ clipPath: "inset(0 100% 0 0)" }}
                                 whileInView={{ clipPath: "inset(0 0% 0 0)" }}
                                 transition={{ duration: 1, delay: 0.5 }}
-                                className="font-serif italic text-7xl text-neutral-500 inline-block"
+                                className="font-serif ole-regular text-8xl text-neutral-500 inline-block"
                             >
                                 Arinze
                             </motion.span>

@@ -425,6 +425,26 @@ export const uploadProfilePicController = async (req: any, res: any) => {
   }
 };
 
+// Update Profile Name logic
+export const updateProfileController = async (req: AuthRequest, res: Response) => {
+  try {
+    const { name } = req.body;
+    const userId = req.user?.id;
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const user = await User.findByIdAndUpdate(
+      userId, 
+      { name }, 
+      { new: true }
+    ).select("-password");
+
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Server error updating profile" });
+  }
+};
+
 export const activateAccount = async (req: Request, res: Response) => {
     try {
         const { email, otp } = req.body;

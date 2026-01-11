@@ -249,11 +249,10 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../component/HomeNavbar";
 import Dpic from "../assets/roundpic.png";
 import roundpic2 from "../assets/roundpic002.png";
-import cloudvid from "../video/cloudvid.mp4";
 import FloatingUniverse from "../DataItem/FloatingUniverse";
 import CinematicFinalSection from "../DataItem/Cinematic";
 import CinematicFooter from "../component/cinematicfooter";
-// import rocks from "../assets/rock.png";
+import com from "../assets/com.jpg";
 
 interface Product {
   id: string;
@@ -319,23 +318,23 @@ const products: Product[] = [
   ];
 
   const fashionImagesTwo: string[] = [
-    "https://img.kwcdn.com/product/fancy/e11d1a68-85de-4342-bb38-640c42050825.jpg?imageView2/2/w/800/q/70/format/webp",
+    "https://i.pinimg.com/736x/e0/83/81/e08381648c32850e0b8ef45031789b13.jpg",
     "https://i.pinimg.com/736x/2e/8f/f0/2e8ff01691120a020ae05aa7974b4855.jpg",
-    "https://img.kwcdn.com/product/fancy/d58e785d-e9da-466d-b1a9-f70a70f6be5a.jpg?imageView2/2/w/800/q/70/format/webp",
+    "https://i.pinimg.com/736x/50/fa/7f/50fa7f5c676ef8aa46da627f190563db.jpg",
     "https://i.pinimg.com/736x/d9/a7/c9/d9a7c993eeccc0667bafcafa3604aecc.jpg",
     "https://i.pinimg.com/736x/70/e0/74/70e07484f6f9e34f1845376d5f5337b2.jpg",
-    "https://i.pinimg.com/736x/28/0f/53/280f539c6e9edf0c3b069ddb3b8815ba.jpg",
+    "https://i.pinimg.com/736x/63/f2/55/63f2550456f40186765a99376f0e082e.jpg",
   ];
 
   const changeImages: (string | typeof Dpic)[] = [
-    "https://img.kwcdn.com/product/fancy/e11d1a68-85de-4342-bb38-640c42050825.jpg?imageView2/2/w/800/q/70/format/webp",
+    "https://i.pinimg.com/736x/02/78/08/027808eea0385891eb0837c5a7ed440a.jpg",
     "https://i.pinimg.com/736x/2e/8f/f0/2e8ff01691120a020ae05aa7974b4855.jpg",
-    "https://img.kwcdn.com/product/fancy/d58e785d-e9da-466d-b1a9-f70a70f6be5a.jpg?imageView2/2/w/800/q/70/format/webp",
-    "https://i.pinimg.com/736x/d9/a7/c9/d9a7c993eeccc0667bafcafa3604aecc.jpg",
-    "https://i.pinimg.com/736x/70/e0/74/70e07484f6f9e34f1845376d5f5337b2.jpg",
-    "https://i.pinimg.com/736x/28/0f/53/280f539c6e9edf0c3b069ddb3b8815ba.jpg",
-    "https://i.pinimg.com/1200x/30/77/68/307768a8e3643e0d04e828018c7c4096.jpg",
-    Dpic,
+    "https://i.pinimg.com/736x/27/96/36/279636917a3929657804dc0274d746d9.jpg",
+    "https://i.pinimg.com/736x/4a/6b/d8/4a6bd842233e20494d2761f2efa70018.jpg",
+    "https://i.pinimg.com/1200x/91/df/7b/91df7b9f5b89e39946fc61e9618e0c83.jpg",
+    "https://i.pinimg.com/736x/33/9b/03/339b032701661113a346361afd195f3d.jpg",
+    "https://i.pinimg.com/1200x/af/0b/d1/af0bd15397805b8a8f0f3ed3fa735e19.jpg",
+    "https://i.pinimg.com/1200x/b3/b4/c4/b3b4c4bf890cc5f4c58cf88358679fe4.jpg",
     roundpic2,
   ];
 
@@ -365,17 +364,24 @@ const products: Product[] = [
     <div className="w-full min-h-screen overflow-hidden">
       <Navbar />
 
-      {/* 🔥 Background Video */}
-      <video
-        ref={videoRef}
-        className="absolute top-0 left-0 w-full h-full object-cover -z-10 opacity-50"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source src={cloudvid} type="video/mp4"/>
-      </video>
+      {/* 🔥 HERO BACKGROUND IMAGE (Replacing Video) */}
+  <div className="absolute top-0 left-0 w-full h-full -z-10 overflow-hidden">
+    <motion.img 
+      initial={{ scale: 1.1 }}
+      animate={{ scale: 1 }}
+      transition={{ duration: 2, ease: "easeOut" }}
+      src={com}
+      className="w-full h-full object-cover opacity-60" 
+      alt="Luxury background"
+    />
+    
+    {/* BLENDING OVERLAYS */}
+    {/* 1. Darken overlay for text readability */}
+    <div className="absolute inset-0 bg-black/20" />
+    
+    {/* 2. Bottom Gradient: Blends the image into the gray-200 of the Marquee section */}
+    <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-gray-200" />
+  </div>
 
               {/* HERO SECTION */}
       <section className="relative min-h-screen flex flex-col lg:flex-row items-center justify-center px-6 md:px-16 lg:px-24 pt-20">
@@ -472,9 +478,9 @@ const products: Product[] = [
         <section className="relative min-h-[80vh] w-full flex flex-col justify-center space-y-12 py-20 overflow-hidden bg-transparent">
           
           {/* Background Text Decor */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
-            <h2 className="text-[20vw] font-black uppercase italic">Vogue</h2>
-          </div>
+          {/* <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none select-none">
+            <h2 className="text-[20vw] text-gray-950 font-black uppercase italic">cloud</h2>
+          </div> */}
 
           {/* First Marquee: Moving Left */}
           <div className="group relative flex overflow-hidden">
